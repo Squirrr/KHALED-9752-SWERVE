@@ -1,12 +1,18 @@
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants.ArmPIDConstants;
 import frc.robot.Autos.exampleAuto;
 import frc.robot.Commands.SimpleShoot;
@@ -15,8 +21,9 @@ import frc.robot.Commands.TeleopSwerve;
 import frc.robot.Subsystems.ArmSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.ShooterSubsystem;
-import frc.robot.Subsystems.SwerveSubsystem;
+import frc.robot.Subsystems.Swerve;
 import frc.robot.Subsystems.TransferSubsystem;
+import frc.robot.utils.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -26,40 +33,69 @@ import frc.robot.Subsystems.TransferSubsystem;
  */
 public class RobotContainer {
     /* Controllers */
-    private final Joystick driver = new Joystick(0);
+    private final Joystick driver = new Joystick(0);    
+    private final CommandPS5Controller base = new CommandPS5Controller(0);
+    private final CommandPS5Controller operator = new CommandPS5Controller(1);
+
 
     /* Drive Controls */
-    private final int translationAxis = XboxController.Axis.kLeftY.value;
-    private final int strafeAxis = XboxController.Axis.kLeftX.value;
-    private final int rotationAxis = XboxController.Axis.kRightX.value;
+    private final int translationAxis = PS5Controller.Axis.kLeftY.value;
+    private final int strafeAxis = PS5Controller.Axis.kLeftX.value;
+    private final int rotationAxis = PS5Controller.Axis.kRightX.value;
+    private final int rotationAxisY = PS5Controller.Axis.kRightY.value;
 
     /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton zeroGyro = new JoystickButton(driver, PS5Controller.Button.kOptions.value);
 
     /* Subsystems */
-    private final SwerveSubsystem s_Swerve = new SwerveSubsystem();
-    private final CommandPS5Controller base = new CommandPS5Controller(0);
+    private final Swerve s_Swerve = new Swerve();
     private final TransferSubsystem transfer = new TransferSubsystem();
     private final IntakeSubsystem intake = new IntakeSubsystem();
     private final ShooterSubsystem shooter = new ShooterSubsystem();
     private final ArmSubsystem arm = new ArmSubsystem();
 
+    /* Limelight */
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTableEntry tx = table.getEntry("tx");
+    NetworkTableEntry ty = table.getEntry("ty");
+    NetworkTableEntry ta = table.getEntry("ta");
+
+    //read values periodically
+    double x = tx.getDouble(0.0);
+    double y = ty.getDouble(0.0);
+    double area = ta.getDouble(0.0);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+
+        /* Default Commands */
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
-                s_Swerve, 
-                () -> -driver.getRawAxis(translationAxis), 
-                () -> -driver.getRawAxis(strafeAxis), 
-                () -> -driver.getRawAxis(rotationAxis), 
-                () -> robotCentric.getAsBoolean()
-            )
-        );
+                    s_Swerve,
+                    () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(translationAxis)),
+                    () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(strafeAxis)),
+                    () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(rotationAxis)),
+                    () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(rotationAxisY)),
+                    base.PS(),
+                    operator.R1(),
+                    operator.circle(),
+                    operator.square(),
+                    base.triangle(),
+                    base.triangle(),
+                    base.R3()));
+    
         intake.setDefaultCommand(intake.DefaultCommand());
         transfer.setDefaultCommand(transfer.DefaultCommand());
         shooter.setDefaultCommand(shooter.DefaultCommand());
+        
+        /* Smart Dashboard */
+        //Post to smart dashboard periodically
+        SmartDashboard.putNumber("LimelightX", x);
+        SmartDashboard.putNumber("LimelightY", y);
+        SmartDashboard.putNumber("LimelightArea", area);
+        SmartDashboard.putNumber("Arm Position", arm.currentArmPos());
+        SmartDashboard.putNumberArray("Shooter Speeds (L/R)", shooter.currentShooterSpeed());
+
         // Configure the button bindings
         configureButtonBindings();
     }
@@ -72,12 +108,11 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-        zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-
+        base.options().onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
         base.R1().whileTrue(new SmartIntake(intake, transfer, arm));
         base.R2().whileTrue(/*new TransferCommand(transfer, -0.2).withTimeout(0.5)
         .andThen*/(new SimpleShoot(transfer, shooter)));
-        base.triangle().whileTrue(arm.SetArmToPos(ArmPIDConstants.ampPos));
+        base.triangle().onTrue(arm.SetArmToPos(ArmPIDConstants.ampPos));
     }
 
     /**

@@ -69,5 +69,9 @@ public class ShooterSubsystem extends SubsystemBase {
       shooterSpeedReached = false;
     }
   }
+  public double[] currentShooterSpeed() {
+    double[] shooterVelocities = 
+      {leftShooterEncoder.getVelocity(), rightShooterEncoder.getVelocity()};
+    return shooterVelocities;
+  }
 }
-

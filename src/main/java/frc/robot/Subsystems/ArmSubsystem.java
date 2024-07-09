@@ -61,4 +61,8 @@ public class ArmSubsystem extends SubsystemBase {
         setArmPosition(pos);
       });
   }
+
+  public double currentArmPos() {
+    return armMotor.getPosition().getValueAsDouble();
+  }
 }
