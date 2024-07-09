@@ -17,7 +17,9 @@ import frc.robot.Constants.ArmConstants.ArmPIDConstants;
 import frc.robot.Autos.exampleAuto;
 import frc.robot.Commands.SimpleShoot;
 import frc.robot.Commands.SmartIntake;
+import frc.robot.Commands.SmartOuttake;
 import frc.robot.Commands.TeleopSwerve;
+import frc.robot.Commands.TransferCommand;
 import frc.robot.Subsystems.ArmSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.ShooterSubsystem;
@@ -110,8 +112,8 @@ public class RobotContainer {
         /* Driver Buttons */
         base.options().onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
         base.R1().whileTrue(new SmartIntake(intake, transfer, arm));
-        base.R2().whileTrue(/*new TransferCommand(transfer, -0.2).withTimeout(0.5)
-        .andThen*/(new SimpleShoot(transfer, shooter)));
+        base.L1().whileTrue(new SmartOuttake(intake, transfer, arm));
+        base.R2().whileTrue(new SimpleShoot(transfer, shooter));
         base.triangle().onTrue(arm.SetArmToPos(ArmPIDConstants.ampPos));
     }
 

@@ -31,12 +31,9 @@ public class SmartOuttake extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.setArmPosition(0);
-    if (arm.armPositionReached) {
       transfer.close();
       intake.setIntake(-1);
       transfer.setTransfer(-1);
-    }
   }
 
   // Called once the command ends or is interrupted.
