@@ -12,8 +12,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.lib.util.COTSTalonFXSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
-import frc.robot.utils.ShooterConfig;
-import frc.robot.utils.ShooterPreset;
+// import frc.robot.utils.ShooterConfig;
+// import frc.robot.utils.ShooterPreset;
 
 //FRC 9752
 
@@ -55,13 +55,14 @@ public final class Constants {
 
     public static final class ArmConstants {
         public static final int kArmMotorPort = 16;
+        public static final double ampPos = 70;
+        public static final double subPos = 10;
 
         public class ArmPIDConstants {
             public static final double kG = 0.255;
             public static final double kP = 0.8;
             public static final double kI = 0;
             public static final double kD = 0.1;
-            public static final double ampPos = 70;
         }
     }
 

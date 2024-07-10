@@ -12,16 +12,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.ArmConstants.ArmPIDConstants;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Autos.exampleAuto;
 import frc.robot.Commands.SimpleShoot;
 import frc.robot.Commands.SmartIntake;
 import frc.robot.Commands.SmartOuttake;
 import frc.robot.Commands.TeleopSwerve;
-import frc.robot.Commands.TransferCommand;
 import frc.robot.Subsystems.ArmSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
+import frc.robot.Subsystems.LimelightSubsystem;
 import frc.robot.Subsystems.ShooterSubsystem;
 import frc.robot.Subsystems.Swerve;
 import frc.robot.Subsystems.TransferSubsystem;
@@ -47,7 +46,7 @@ public class RobotContainer {
     private final int rotationAxisY = PS5Controller.Axis.kRightY.value;
 
     /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(driver, PS5Controller.Button.kOptions.value);
+    // private final JoystickButton zeroGyro = new JoystickButton(driver, PS5Controller.Button.kOptions.value);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
@@ -55,6 +54,7 @@ public class RobotContainer {
     private final IntakeSubsystem intake = new IntakeSubsystem();
     private final ShooterSubsystem shooter = new ShooterSubsystem();
     private final ArmSubsystem arm = new ArmSubsystem();
+    private final LimelightSubsystem limelight = new LimelightSubsystem();
 
     /* Limelight */
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -74,17 +74,18 @@ public class RobotContainer {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                     s_Swerve,
+                    limelight,
                     () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(translationAxis)),
                     () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(strafeAxis)),
                     () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(rotationAxis)),
                     () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(rotationAxisY)),
-                    base.PS(),
-                    operator.R1(),
-                    operator.circle(),
-                    operator.square(),
-                    base.triangle(),
-                    base.triangle(),
-                    base.R3()));
+                    base.PS(), //robotCentricSup
+                    operator.R1(), //passHeading
+                    operator.circle(), //podiumHeading
+                    operator.square(), //ampPassHeading
+                    base.triangle(), //limelightTarget
+                    base.triangle(), //povDown
+                    base.R3())); //defenseMode
     
         intake.setDefaultCommand(intake.DefaultCommand());
         transfer.setDefaultCommand(transfer.DefaultCommand());
@@ -96,7 +97,8 @@ public class RobotContainer {
         SmartDashboard.putNumber("LimelightY", y);
         SmartDashboard.putNumber("LimelightArea", area);
         SmartDashboard.putNumber("Arm Position", arm.currentArmPos());
-        SmartDashboard.putNumberArray("Shooter Speeds (L/R)", shooter.currentShooterSpeed());
+        SmartDashboard.putNumber("Left Shooter Speed", shooter.currentShooterSpeed()[0]);
+        SmartDashboard.putNumber("Right Shooter Speed", shooter.currentShooterSpeed()[1]);
 
         // Configure the button bindings
         configureButtonBindings();
@@ -114,7 +116,8 @@ public class RobotContainer {
         base.R1().whileTrue(new SmartIntake(intake, transfer, arm));
         base.L1().whileTrue(new SmartOuttake(intake, transfer, arm));
         base.R2().whileTrue(new SimpleShoot(transfer, shooter));
-        base.triangle().onTrue(arm.SetArmToPos(ArmPIDConstants.ampPos));
+        base.cross().onTrue(arm.SetArmToPos(ArmConstants.ampPos));
+        base.touchpad().onTrue(arm.SetArmToPos(ArmConstants.subPos));
     }
 
     /**
