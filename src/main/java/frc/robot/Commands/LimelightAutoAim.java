@@ -4,22 +4,26 @@
 
 package frc.robot.Commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.LimelightHelpers;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Subsystems.ArmSubsystem;
 import frc.robot.Subsystems.LimelightSubsystem;
 
-public class AutoAim extends Command {
+public class LimelightAutoAim extends Command {
   LimelightSubsystem limelight;
   ArmSubsystem arm;
-  double limelightPos;
-  /** Creates a new AutoAim. */
-  public AutoAim(LimelightSubsystem l, ArmSubsystem a) {
+  double limelightPos = 0;
+
+  /** Creates a new LimelightAutoAim. */
+  public LimelightAutoAim(LimelightSubsystem l, ArmSubsystem a) {
     limelight = l;
     arm = a;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(arm);
     addRequirements(limelight);
+    addRequirements(arm);
   }
 
   // Called when the command is initially scheduled.
@@ -29,10 +33,12 @@ public class AutoAim extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    if (LimelightHelpers.getTV("limelight")) {
     limelightPos = limelight.setLimelightArmPos();
-    System.out.println(limelightPos);
-    SmartDashboard.putNumber("Limelight Pos", limelightPos);
-    arm.setArmPosition(limelightPos);
+    // System.out.println(limelightPos);
+    // SmartDashboard.putNumber("Limelight Pos", limelightPos);
+    arm.setArmPosition(MathUtil.clamp(limelightPos, ArmConstants.subPos, ArmConstants.ampPos));
+    }
   }
 
   // Called once the command ends or is interrupted.

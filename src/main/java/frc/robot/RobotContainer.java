@@ -1,5 +1,8 @@
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -7,6 +10,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -14,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Autos.exampleAuto;
-import frc.robot.Commands.AutoAim;
+import frc.robot.Commands.LimelightAutoAim;
 import frc.robot.Commands.SimpleShoot;
 import frc.robot.Commands.SmartIntake;
 import frc.robot.Commands.SmartOuttake;
@@ -56,6 +60,7 @@ public class RobotContainer {
     private final ShooterSubsystem shooter = new ShooterSubsystem();
     private final ArmSubsystem arm = new ArmSubsystem();
     private final LimelightSubsystem limelight = new LimelightSubsystem();
+    private final SendableChooser<Command> autoChooser;
 
     /* Limelight */
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -67,11 +72,6 @@ public class RobotContainer {
     double x = tx.getDouble(0.0);
     double y = ty.getDouble(0.0);
     double area = ta.getDouble(0.0);
-
-    //calculating angle to speaker using Ll
-    double limelightAngle = Math.atan((LimelightConstants.aprilTagToSpeakerHeight+LimelightConstants.heightToAprilTag)
-    /(LimelightConstants.heightToAprilTag/Math.tan(LimelightHelpers.getTY("limelight"))))
-    +10;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -98,8 +98,15 @@ public class RobotContainer {
         shooter.setDefaultCommand(shooter.DefaultCommand());
         limelight.setDefaultCommand(limelight.DefaultCommand());
         
-        /* Smart Dashboard */
+        // Build an auto chooser. This will use Commands.none() as the default option.
+        autoChooser = AutoBuilder.buildAutoChooser();
+
+        // Another option that allows you to specify the default auto by its name
+        // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
         
+        /* Smart Dashboard */
+
+        SmartDashboard.putData("Auto Chooser", autoChooser);
         //Post to smart dashboard periodically
         SmartDashboard.putNumber("LimelightX", x);
         SmartDashboard.putNumber("LimelightY", y);
@@ -108,8 +115,14 @@ public class RobotContainer {
         SmartDashboard.putNumber("Arm Position", arm.currentArmPos());        
         SmartDashboard.putNumber("Left Shooter Speed", shooter.currentShooterSpeed()[0]);
         SmartDashboard.putNumber("Right Shooter Speed", shooter.currentShooterSpeed()[1]);
-        SmartDashboard.putNumber("Limelight Arm Pos", limelight.limelightArmPos);
-        SmartDashboard.putNumber("Limelight Angle", limelightAngle);
+
+
+        /* Named Commands */
+        NamedCommands.registerCommand("Arm Pivot to Sub", arm.SetArmToPos(ArmConstants.subPos));
+        NamedCommands.registerCommand("Intake", new SmartIntake(intake, transfer, arm));
+        NamedCommands.registerCommand("Stop Intake", intake.DefaultCommand());
+        NamedCommands.registerCommand("Shoot", new SimpleShoot(transfer, shooter));
+        NamedCommands.registerCommand("Stop Shooter", shooter.DefaultCommand());
 
         // Configure the button bindings
         configureButtonBindings();
@@ -129,7 +142,7 @@ public class RobotContainer {
         base.R2().whileTrue(new SimpleShoot(transfer, shooter));
         base.cross().onTrue(arm.SetArmToPos(ArmConstants.ampPos));
         base.touchpad().onTrue(arm.SetArmToPos(ArmConstants.subPos));
-        base.triangle().onTrue(new AutoAim(limelight, arm));
+        base.triangle().onTrue(new LimelightAutoAim(limelight, arm));
     }
 
     /**
@@ -139,6 +152,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return new exampleAuto(s_Swerve);
+        return autoChooser.getSelected();
     }
 }

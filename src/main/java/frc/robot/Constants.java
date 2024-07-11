@@ -82,7 +82,7 @@ public final class Constants {
     }
 
     public static final class LimelightConstants {
-        public static final double heightToAprilTag = 38.625; //38.625 old value
+        public static final double heightToAprilTag = 38.625; //Dist from Ll to AprilTag
         public static final double aprilTagToSpeakerHeight = 20;
     }
 
