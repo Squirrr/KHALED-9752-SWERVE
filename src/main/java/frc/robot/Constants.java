@@ -39,7 +39,7 @@ public final class Constants {
 
     public static final double translationalAutoP = 3.8;
     public static final double rotationalAutoP = 6.25;
-    
+
     public static final class Universal {
         public static final double voltageMin = 0;
         public static final double voltageMax = 12;
@@ -55,6 +55,7 @@ public final class Constants {
 
     public static final class ArmConstants {
         public static final int kArmMotorPort = 16;
+        public static final double armGearRatio = 1/45/3;
         public static final double ampPos = 70;
         public static final double subPos = 10;
 
@@ -80,8 +81,9 @@ public final class Constants {
         }
     }
 
-    public static final class TransferSubsystem {
-        public static final int TRANSFER_MOTOR_PORT = 20;
+    public static final class LimelightConstants {
+        public static final double heightToAprilTag = 38.625; //38.625 old value
+        public static final double aprilTagToSpeakerHeight = 20;
     }
 
     public static final class Swerve {

@@ -11,9 +11,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.Autos.exampleAuto;
+import frc.robot.Commands.AutoAim;
 import frc.robot.Commands.SimpleShoot;
 import frc.robot.Commands.SmartIntake;
 import frc.robot.Commands.SmartOuttake;
@@ -24,7 +25,7 @@ import frc.robot.Subsystems.LimelightSubsystem;
 import frc.robot.Subsystems.ShooterSubsystem;
 import frc.robot.Subsystems.Swerve;
 import frc.robot.Subsystems.TransferSubsystem;
-import frc.robot.utils.*;
+import frc.robot.utils.SquaredInput;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -67,6 +68,11 @@ public class RobotContainer {
     double y = ty.getDouble(0.0);
     double area = ta.getDouble(0.0);
 
+    //calculating angle to speaker using Ll
+    double limelightAngle = Math.atan((LimelightConstants.aprilTagToSpeakerHeight+LimelightConstants.heightToAprilTag)
+    /(LimelightConstants.heightToAprilTag/Math.tan(LimelightHelpers.getTY("limelight"))))
+    +10;
+
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
 
@@ -90,15 +96,20 @@ public class RobotContainer {
         intake.setDefaultCommand(intake.DefaultCommand());
         transfer.setDefaultCommand(transfer.DefaultCommand());
         shooter.setDefaultCommand(shooter.DefaultCommand());
+        limelight.setDefaultCommand(limelight.DefaultCommand());
         
         /* Smart Dashboard */
+        
         //Post to smart dashboard periodically
         SmartDashboard.putNumber("LimelightX", x);
         SmartDashboard.putNumber("LimelightY", y);
         SmartDashboard.putNumber("LimelightArea", area);
-        SmartDashboard.putNumber("Arm Position", arm.currentArmPos());
+
+        SmartDashboard.putNumber("Arm Position", arm.currentArmPos());        
         SmartDashboard.putNumber("Left Shooter Speed", shooter.currentShooterSpeed()[0]);
         SmartDashboard.putNumber("Right Shooter Speed", shooter.currentShooterSpeed()[1]);
+        SmartDashboard.putNumber("Limelight Arm Pos", limelight.limelightArmPos);
+        SmartDashboard.putNumber("Limelight Angle", limelightAngle);
 
         // Configure the button bindings
         configureButtonBindings();
@@ -118,6 +129,7 @@ public class RobotContainer {
         base.R2().whileTrue(new SimpleShoot(transfer, shooter));
         base.cross().onTrue(arm.SetArmToPos(ArmConstants.ampPos));
         base.touchpad().onTrue(arm.SetArmToPos(ArmConstants.subPos));
+        base.triangle().onTrue(new AutoAim(limelight, arm));
     }
 
     /**

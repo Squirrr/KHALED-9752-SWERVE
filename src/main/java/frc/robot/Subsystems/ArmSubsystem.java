@@ -13,8 +13,11 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmConstants.*;
+import frc.robot.Constants.LimelightConstants;
+import frc.robot.LimelightHelpers;
 
 public class ArmSubsystem extends SubsystemBase {
   /** Creates a new ArmSubsystem. */
@@ -29,10 +32,10 @@ public class ArmSubsystem extends SubsystemBase {
 
   public ArmSubsystem() {
     slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
-    slot0Configs.kG = ArmPIDConstants.kG;
-    slot0Configs.kP = ArmPIDConstants.kP; 
-    slot0Configs.kI = ArmPIDConstants.kI; 
-    slot0Configs.kD = ArmPIDConstants.kD;
+    slot0Configs.kG = ArmPIDConstants.kG; //0.255
+    slot0Configs.kP = ArmPIDConstants.kP; //0.8
+    slot0Configs.kI = ArmPIDConstants.kI; //0
+    slot0Configs.kD = ArmPIDConstants.kD; //0.1
 
     motionMagicConfigs.MotionMagicCruiseVelocity = 80;
     motionMagicConfigs.MotionMagicAcceleration = 100;
