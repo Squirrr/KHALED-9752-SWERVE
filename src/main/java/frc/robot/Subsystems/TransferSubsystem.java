@@ -14,16 +14,7 @@ import frc.robot.Constants.ShooterConstants;
 public class TransferSubsystem extends SubsystemBase {
   /** Creates a new TransferSubsystem. */
   final TalonFX transferMotor = new TalonFX(ShooterConstants.kTransferMotorPort, "rio");
-  final Servo gateServo = new Servo(ShooterConstants.kServoPort);
   public TransferSubsystem() {}
-
-  public void open() {
-    gateServo.setPosition(1);
-  }
-
-  public void close() {
-    gateServo.setPosition(0.6);
-  }
 
   public void setTransfer(double speed) {
     transferMotor.set(speed);
@@ -33,6 +24,13 @@ public class TransferSubsystem extends SubsystemBase {
     return run(
       () -> {
         transferMotor.stopMotor();;
+      });
+  }
+
+  public Command Transfer() {
+    return run(
+      () -> {
+        setTransfer(1);
       });
   }
 

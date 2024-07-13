@@ -62,6 +62,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public void setShooterRPM(double leftFlywheelSetPoint, double rightFlywheelSetPoint) {
     leftPIDController.setReference(leftFlywheelSetPoint, ControlType.kVelocity);
     rightPIDController.setReference(-rightFlywheelSetPoint, ControlType.kVelocity);
+    
     if (rightShooterEncoder.getVelocity() < -rightFlywheelSetPoint*0.9 &&
         rightShooterEncoder.getVelocity() > -rightFlywheelSetPoint*1.1) {
       shooterSpeedReached = true;
@@ -73,5 +74,12 @@ public class ShooterSubsystem extends SubsystemBase {
     double[] shooterVelocities = 
       {leftShooterEncoder.getVelocity(), rightShooterEncoder.getVelocity()};
     return shooterVelocities;
+  }
+
+  public Command SpinShooters(double flywheelSpeed) {
+    return run(
+      () -> {
+        setShooterRPM(flywheelSpeed*0.9, flywheelSpeed);
+      });
   }
 }

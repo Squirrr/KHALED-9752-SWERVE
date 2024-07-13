@@ -25,6 +25,13 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMotor.stopMotor();
       });
   }
+
+  public Command Intake() {
+    return run(
+      () -> {
+        setIntake(1);
+      });
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

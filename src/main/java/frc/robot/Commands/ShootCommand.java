@@ -5,19 +5,25 @@
 package frc.robot.Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Subsystems.GateSubsystem;
 import frc.robot.Subsystems.ShooterSubsystem;
 import frc.robot.Subsystems.TransferSubsystem;
 
-public class SimpleShoot extends Command {
+public class ShootCommand extends Command {
   TransferSubsystem transfer;
   ShooterSubsystem shooter;
+  GateSubsystem gate;
+  double flywheelSpeed;
   /** Creates a new SimpleShoot. */
-  public SimpleShoot(TransferSubsystem t, ShooterSubsystem s) {
+  public ShootCommand(TransferSubsystem t, ShooterSubsystem s, GateSubsystem g, double fSpeed) {
     transfer = t;
     shooter = s;
+    gate = g;
+    flywheelSpeed = fSpeed;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(transfer);
     addRequirements(shooter);
+    addRequirements(gate);
   }
 
   // Called when the command is initially scheduled.
@@ -27,9 +33,9 @@ public class SimpleShoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setShooterRPM(5000, 6000);
+    shooter.setShooterRPM(flywheelSpeed*0.9, flywheelSpeed);
     if (shooter.shooterSpeedReached) {
-      transfer.open();
+      gate.open();
       transfer.setTransfer(1);
     }
   }

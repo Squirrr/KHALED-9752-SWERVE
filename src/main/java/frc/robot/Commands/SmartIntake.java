@@ -6,6 +6,7 @@ package frc.robot.Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.ArmSubsystem;
+import frc.robot.Subsystems.GateSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.TransferSubsystem;
 
@@ -13,15 +14,18 @@ public class SmartIntake extends Command {
   /** Creates a new SmartIntake. */
   IntakeSubsystem intake;
   TransferSubsystem transfer;
+  GateSubsystem gate;
   ArmSubsystem arm;
-  public SmartIntake(IntakeSubsystem i, TransferSubsystem t, ArmSubsystem a) {
+  public SmartIntake(IntakeSubsystem i, TransferSubsystem t, GateSubsystem g, ArmSubsystem a) {
     intake = i;
     transfer = t;
     arm = a;
+    gate = g;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intake);
     addRequirements(transfer);
     addRequirements(arm);
+    addRequirements(gate);
   }
 
   // Called when the command is initially scheduled.
@@ -33,7 +37,7 @@ public class SmartIntake extends Command {
   public void execute() {
     arm.setArmPosition(0);
     if (arm.armPositionReached) {
-      transfer.close();
+      gate.close();
       intake.setIntake(1);
       transfer.setTransfer(1);
     }

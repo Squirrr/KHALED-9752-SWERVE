@@ -1,0 +1,187 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.4048307100172925,
+      "y": 5.531293435066112
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "START_SHOOTER"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SUB_PIVOT"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SMART_TRANSFER"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "deadline",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "SMART_INTAKE"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Center Note"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.0
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "STOP_INTAKE"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "CENTER_PIVOT"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SMART_TRANSFER"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "deadline",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "SMART_INTAKE"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Center to Right Note"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.5
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "STOP_INTAKE"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RIGHT_PIVOT"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SMART_TRANSFER"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "deadline",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "SMART_INTAKE"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Right to Left Note"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.6
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "STOP_INTAKE"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "LEFT_PIVOT"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SMART_TRANSFER"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

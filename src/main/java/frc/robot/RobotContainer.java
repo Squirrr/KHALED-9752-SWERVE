@@ -14,16 +14,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Autos.exampleAuto;
 import frc.robot.Commands.LimelightAutoAim;
-import frc.robot.Commands.SimpleShoot;
+import frc.robot.Commands.ShootCommand;
 import frc.robot.Commands.SmartIntake;
 import frc.robot.Commands.SmartOuttake;
 import frc.robot.Commands.TeleopSwerve;
 import frc.robot.Subsystems.ArmSubsystem;
+import frc.robot.Subsystems.GateSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.LimelightSubsystem;
 import frc.robot.Subsystems.ShooterSubsystem;
@@ -56,10 +60,12 @@ public class RobotContainer {
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final TransferSubsystem transfer = new TransferSubsystem();
+    private final GateSubsystem gate = new GateSubsystem();
     private final IntakeSubsystem intake = new IntakeSubsystem();
     private final ShooterSubsystem shooter = new ShooterSubsystem();
     private final ArmSubsystem arm = new ArmSubsystem();
     private final LimelightSubsystem limelight = new LimelightSubsystem();
+    
     private final SendableChooser<Command> autoChooser;
 
     /* Limelight */
@@ -99,14 +105,13 @@ public class RobotContainer {
         limelight.setDefaultCommand(limelight.DefaultCommand());
         
         // Build an auto chooser. This will use Commands.none() as the default option.
-        autoChooser = AutoBuilder.buildAutoChooser();
 
         // Another option that allows you to specify the default auto by its name
         // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
         
         /* Smart Dashboard */
 
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+
         //Post to smart dashboard periodically
         SmartDashboard.putNumber("LimelightX", x);
         SmartDashboard.putNumber("LimelightY", y);
@@ -118,11 +123,48 @@ public class RobotContainer {
 
 
         /* Named Commands */
-        NamedCommands.registerCommand("Arm Pivot to Sub", arm.SetArmToPos(ArmConstants.subPos));
-        NamedCommands.registerCommand("Intake", new SmartIntake(intake, transfer, arm));
-        NamedCommands.registerCommand("Stop Intake", intake.DefaultCommand());
-        NamedCommands.registerCommand("Shoot", new SimpleShoot(transfer, shooter));
-        NamedCommands.registerCommand("Stop Shooter", shooter.DefaultCommand());
+        NamedCommands.registerCommand("SUB_PIVOT", new ParallelDeadlineGroup(
+            arm.SetArmToPos(ArmConstants.subPos), new WaitCommand(0.5)
+        ));
+
+        NamedCommands.registerCommand("CENTER_PIVOT", new ParallelDeadlineGroup(
+            arm.SetArmToPos(20), new WaitCommand(0.5)
+        ));
+
+        NamedCommands.registerCommand("LEFT_PIVOT", new ParallelDeadlineGroup(
+            arm.SetArmToPos(25), new WaitCommand(0.5)
+        ));
+
+        NamedCommands.registerCommand("RIGHT_PIVOT", new ParallelDeadlineGroup(
+            arm.SetArmToPos(25), new WaitCommand(0.5)
+        ));
+
+        NamedCommands.registerCommand("SMART_INTAKE", 
+        new SmartIntake(intake, transfer, gate, arm));
+
+        NamedCommands.registerCommand("STOP_INTAKE", new ParallelDeadlineGroup(
+            intake.DefaultCommand(), new WaitCommand(0.1)
+        ));
+
+        NamedCommands.registerCommand("SMART_TRANSFER", new ParallelDeadlineGroup(
+            transfer.Transfer(), gate.Open(), new WaitCommand(0.5)
+        ));
+
+        NamedCommands.registerCommand("START_SHOOTER", 
+        shooter.SpinShooters(6000));
+
+        NamedCommands.registerCommand("STOP_SHOOTER", new ParallelDeadlineGroup(
+            shooter.DefaultCommand(), new WaitCommand(0.1)
+        ));
+
+        NamedCommands.registerCommand("OPEN_GATE", 
+        gate.Open());
+
+        NamedCommands.registerCommand("CLOSE_GATE", 
+        gate.Close());
+
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
 
         // Configure the button bindings
         configureButtonBindings();
@@ -137,9 +179,9 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         base.options().onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-        base.R1().whileTrue(new SmartIntake(intake, transfer, arm));
-        base.L1().whileTrue(new SmartOuttake(intake, transfer, arm));
-        base.R2().whileTrue(new SimpleShoot(transfer, shooter));
+        base.R1().whileTrue(new SmartIntake(intake, transfer, gate, arm));
+        base.L1().whileTrue(new SmartOuttake(intake, transfer, gate, arm));
+        base.R2().whileTrue(new ShootCommand(transfer, shooter, gate, 6000));
         base.cross().onTrue(arm.SetArmToPos(ArmConstants.ampPos));
         base.touchpad().onTrue(arm.SetArmToPos(ArmConstants.subPos));
         base.triangle().onTrue(new LimelightAutoAim(limelight, arm));
@@ -151,7 +193,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
+        // The chosen routine will run in autonomous
         return autoChooser.getSelected();
     }
 }
