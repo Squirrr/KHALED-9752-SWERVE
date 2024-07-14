@@ -124,37 +124,41 @@ public class RobotContainer {
 
         /* Named Commands */
         NamedCommands.registerCommand("SUB_PIVOT", new ParallelDeadlineGroup(
-            arm.SetArmToPos(ArmConstants.subPos), new WaitCommand(0.5)
+            new WaitCommand(0.5), arm.SetArmToPos(ArmConstants.subPos)
         ));
 
         NamedCommands.registerCommand("CENTER_PIVOT", new ParallelDeadlineGroup(
-            arm.SetArmToPos(20), new WaitCommand(0.5)
+            new WaitCommand(0.5), arm.SetArmToPos(20)
         ));
 
         NamedCommands.registerCommand("LEFT_PIVOT", new ParallelDeadlineGroup(
-            arm.SetArmToPos(25), new WaitCommand(0.5)
+            new WaitCommand(0.5), arm.SetArmToPos(25)
         ));
 
         NamedCommands.registerCommand("RIGHT_PIVOT", new ParallelDeadlineGroup(
-            arm.SetArmToPos(25), new WaitCommand(0.5)
+            new WaitCommand(0.5), arm.SetArmToPos(25)
         ));
 
         NamedCommands.registerCommand("SMART_INTAKE", 
         new SmartIntake(intake, transfer, gate, arm));
 
         NamedCommands.registerCommand("STOP_INTAKE", new ParallelDeadlineGroup(
-            intake.DefaultCommand(), new WaitCommand(0.1)
+            new WaitCommand(0.1), intake.DefaultCommand()
         ));
 
         NamedCommands.registerCommand("SMART_TRANSFER", new ParallelDeadlineGroup(
-            transfer.Transfer(), gate.Open(), new WaitCommand(0.5)
+            new WaitCommand(0.5), transfer.Transfer(), gate.Open()
+        ));
+
+        NamedCommands.registerCommand("STOP_TRANSFER", new ParallelDeadlineGroup(
+            new WaitCommand(0.1), transfer.DefaultCommand()
         ));
 
         NamedCommands.registerCommand("START_SHOOTER", 
         shooter.SpinShooters(6000));
 
         NamedCommands.registerCommand("STOP_SHOOTER", new ParallelDeadlineGroup(
-            shooter.DefaultCommand(), new WaitCommand(0.1)
+            new WaitCommand(0.1), shooter.DefaultCommand()
         ));
 
         NamedCommands.registerCommand("OPEN_GATE", 

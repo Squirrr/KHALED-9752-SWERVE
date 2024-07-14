@@ -31,13 +31,18 @@ public class ArmSubsystem extends SubsystemBase {
   public boolean armPositionReached = false;
 
   public ArmSubsystem() {
+// rightArm.setInverted(true);
+    armConfigs.CurrentLimits.SupplyCurrentThreshold = 20;
+    armConfigs.CurrentLimits.SupplyCurrentLimit = 10;
+    armConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;    
+    
     slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
     slot0Configs.kG = ArmPIDConstants.kG; //0.255
     slot0Configs.kP = ArmPIDConstants.kP; //0.8
     slot0Configs.kI = ArmPIDConstants.kI; //0
     slot0Configs.kD = ArmPIDConstants.kD; //0.1
 
-    motionMagicConfigs.MotionMagicCruiseVelocity = 80;
+    motionMagicConfigs.MotionMagicCruiseVelocity = 60;
     motionMagicConfigs.MotionMagicAcceleration = 100;
     motionMagicConfigs.MotionMagicJerk = 1600;
   
