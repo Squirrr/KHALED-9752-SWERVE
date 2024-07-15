@@ -27,10 +27,10 @@ public class TransferSubsystem extends SubsystemBase {
       });
   }
 
-  public Command Transfer() {
+  public Command Transfer(double tSpeed) {
     return run(
       () -> {
-        setTransfer(1);
+        setTransfer(tSpeed);
       });
   }
 

@@ -22,7 +22,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public Command DefaultCommand() {
     return run(
       () -> {
-        intakeMotor.stopMotor();
+        intakeMotor.set(0);
       });
   }
 

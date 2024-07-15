@@ -22,7 +22,7 @@ public class GateSubsystem extends SubsystemBase {
   }
 
   public void open() {
-    gateServo.setPosition(-1);
+    gateServo.setPosition(0.6);
   }
 
   public void close() {

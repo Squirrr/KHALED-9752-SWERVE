@@ -5,26 +5,22 @@
 package frc.robot.Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Subsystems.ArmSubsystem;
 import frc.robot.Subsystems.GateSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.TransferSubsystem;
 
-public class SmartIntake extends Command {
-  /** Creates a new SmartIntake. */
+public class DumbIntake extends Command {
+  /** Creates a new SmartOuttake. */
   IntakeSubsystem intake;
   TransferSubsystem transfer;
   GateSubsystem gate;
-  ArmSubsystem arm;
-  public SmartIntake(IntakeSubsystem i, TransferSubsystem t, GateSubsystem g, ArmSubsystem a) {
+  public DumbIntake(IntakeSubsystem i, TransferSubsystem t, GateSubsystem g) {
     intake = i;
     transfer = t;
-    arm = a;
     gate = g;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intake);
     addRequirements(transfer);
-    addRequirements(arm);
     addRequirements(gate);
   }
 
@@ -35,14 +31,9 @@ public class SmartIntake extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.setArmPosition(0);
-    if (arm.armPositionReached) {
       gate.close();
-      intake.setIntake(1);
+      intake.setIntake(0.5);
       transfer.setTransfer(0.2);
-    } else {
-      System.out.println(arm.currentArmPos());
-    }
   }
 
   // Called once the command ends or is interrupted.

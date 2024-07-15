@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -16,11 +18,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.LimelightConstants;
-import frc.robot.Autos.exampleAuto;
+import frc.robot.Commands.DumbIntake;
 import frc.robot.Commands.LimelightAutoAim;
 import frc.robot.Commands.ShootCommand;
 import frc.robot.Commands.SmartIntake;
@@ -123,12 +125,28 @@ public class RobotContainer {
 
 
         /* Named Commands */
+        NamedCommands.registerCommand("STOP_DRIVE", 
+        new TeleopSwerve(
+                    s_Swerve,
+                    limelight,
+                    () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(translationAxis)),
+                    () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(strafeAxis)),
+                    () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(rotationAxis)),
+                    () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(rotationAxisY)),
+                    base.PS(), //robotCentricSup
+                    operator.R1(), //passHeading
+                    operator.circle(), //podiumHeading
+                    operator.square(), //ampPassHeading
+                    base.triangle(), //limelightTarget
+                    base.triangle(), //povDown
+                    base.R3())); //defenseMode);
+
         NamedCommands.registerCommand("SUB_PIVOT", new ParallelDeadlineGroup(
             new WaitCommand(0.5), arm.SetArmToPos(ArmConstants.subPos)
         ));
 
         NamedCommands.registerCommand("CENTER_PIVOT", new ParallelDeadlineGroup(
-            new WaitCommand(0.5), arm.SetArmToPos(20)
+            new WaitCommand(0.5), arm.SetArmToPos(21)
         ));
 
         NamedCommands.registerCommand("LEFT_PIVOT", new ParallelDeadlineGroup(
@@ -136,8 +154,12 @@ public class RobotContainer {
         ));
 
         NamedCommands.registerCommand("RIGHT_PIVOT", new ParallelDeadlineGroup(
-            new WaitCommand(0.5), arm.SetArmToPos(25)
+            new WaitCommand(0.5), arm.SetArmToPos(23.5)
         ));
+
+        NamedCommands.registerCommand("DUMB_INTAKE",
+            new DumbIntake(intake, transfer, gate)
+        );
 
         NamedCommands.registerCommand("SMART_INTAKE", 
         new SmartIntake(intake, transfer, gate, arm));
@@ -146,16 +168,29 @@ public class RobotContainer {
             new WaitCommand(0.1), intake.DefaultCommand()
         ));
 
-        NamedCommands.registerCommand("SMART_TRANSFER", new ParallelDeadlineGroup(
-            new WaitCommand(0.5), transfer.Transfer(), gate.Open()
-        ));
+        NamedCommands.registerCommand("SHOOTER_PREP", new ParallelDeadlineGroup(
+            new WaitCommand(0.5), transfer.Transfer(-0.1)));
+
+        NamedCommands.registerCommand("SMART_TRANSFER", new SequentialCommandGroup(
+        new ParallelDeadlineGroup(
+            new WaitCommand(0.25), gate.Open()),
+        new ParallelDeadlineGroup(
+            new WaitCommand(0.5), transfer.Transfer(-0.1)), 
+        new ParallelDeadlineGroup(
+            new WaitCommand(0.5), transfer.Transfer(1)
+        )));
 
         NamedCommands.registerCommand("STOP_TRANSFER", new ParallelDeadlineGroup(
             new WaitCommand(0.1), transfer.DefaultCommand()
         ));
 
-        NamedCommands.registerCommand("START_SHOOTER", 
-        shooter.SpinShooters(6000));
+        NamedCommands.registerCommand("START_SHOOTER", new ParallelDeadlineGroup(
+            new WaitCommand(0.1), shooter.SpinShooters(6000)
+        ));
+
+        NamedCommands.registerCommand("SIMPLE_SHOOT", new ParallelDeadlineGroup(
+            new WaitCommand(0.5), new ShootCommand(transfer, shooter, gate, 6000)
+        ));
 
         NamedCommands.registerCommand("STOP_SHOOTER", new ParallelDeadlineGroup(
             new WaitCommand(0.1), shooter.DefaultCommand()
@@ -182,6 +217,7 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
+        base.circle().whileTrue(new DumbIntake(intake, transfer, gate));
         base.options().onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
         base.R1().whileTrue(new SmartIntake(intake, transfer, gate, arm));
         base.L1().whileTrue(new SmartOuttake(intake, transfer, gate, arm));

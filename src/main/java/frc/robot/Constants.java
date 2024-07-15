@@ -61,9 +61,9 @@ public final class Constants {
 
         public class ArmPIDConstants {
             public static final double kG = 0.255;
-            public static final double kP = 0.8;
+            public static final double kP = 1.5;
             public static final double kI = 0;
-            public static final double kD = 0.1;
+            public static final double kD = 0.2;
         }
     }
 
