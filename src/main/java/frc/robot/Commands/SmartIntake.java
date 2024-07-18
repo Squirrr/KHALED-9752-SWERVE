@@ -40,8 +40,8 @@ public class SmartIntake extends Command {
       gate.close();
       intake.setIntake(1);
       transfer.setTransfer(0.2);
-    } else {
-      System.out.println(arm.currentArmPos());
+    // } else {
+    //   System.out.println(arm.currentArmPos());
     }
   }
 

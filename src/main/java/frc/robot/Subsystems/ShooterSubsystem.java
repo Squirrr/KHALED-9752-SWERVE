@@ -13,13 +13,13 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.Constants.ShooterConstants.*;
+import frc.robot.Constants.ShooterConstants.ShooterPIDConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
   /** Creates a new ShooterSubsystem. */
   final CANSparkFlex rightShooterMotor = new CANSparkFlex(ShooterConstants.kRightShooterMotorPort, MotorType.kBrushless);
   final CANSparkFlex leftShooterMotor = new CANSparkFlex(ShooterConstants.kLeftShooterMotorPort, MotorType.kBrushless);
-
+  
   final RelativeEncoder rightShooterEncoder = rightShooterMotor.getEncoder();
   final RelativeEncoder leftShooterEncoder = leftShooterMotor.getEncoder();
 
@@ -31,6 +31,8 @@ public class ShooterSubsystem extends SubsystemBase {
   public ShooterSubsystem() {
     rightShooterMotor.restoreFactoryDefaults();
     leftShooterMotor.restoreFactoryDefaults();
+
+    rightShooterMotor.setInverted(true);
 
     rightPIDController.setFF(ShooterPIDConstants.kFF);
     rightPIDController.setP(ShooterPIDConstants.kP);
@@ -61,10 +63,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void setShooterRPM(double leftFlywheelSetPoint, double rightFlywheelSetPoint) {
     leftPIDController.setReference(leftFlywheelSetPoint, ControlType.kVelocity);
-    rightPIDController.setReference(-rightFlywheelSetPoint, ControlType.kVelocity);
+    rightPIDController.setReference(rightFlywheelSetPoint, ControlType.kVelocity);
     
-    if (rightShooterEncoder.getVelocity() < -rightFlywheelSetPoint*0.9 &&
-        rightShooterEncoder.getVelocity() > -rightFlywheelSetPoint*1.1) {
+    if (rightShooterEncoder.getVelocity() > rightFlywheelSetPoint*0.9 &&
+        rightShooterEncoder.getVelocity() < rightFlywheelSetPoint*1.1) {
       shooterSpeedReached = true;
     } else {
       shooterSpeedReached = false;

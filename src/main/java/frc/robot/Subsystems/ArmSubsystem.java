@@ -7,17 +7,13 @@ package frc.robot.Subsystems;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.ArmConstants.*;
-import frc.robot.Constants.LimelightConstants;
-import frc.robot.LimelightHelpers;
 
 public class ArmSubsystem extends SubsystemBase {
   /** Creates a new ArmSubsystem. */
@@ -26,27 +22,39 @@ public class ArmSubsystem extends SubsystemBase {
   TalonFXConfiguration armConfigs = new TalonFXConfiguration();
   Slot0Configs slot0Configs = armConfigs.Slot0;
   MotionMagicConfigs motionMagicConfigs = armConfigs.MotionMagic;
-  PositionVoltage request = new PositionVoltage(0).withSlot(0);
+  MotionMagicVoltage request;
 
   public boolean armPositionReached = false;
 
   public ArmSubsystem() {
-// rightArm.setInverted(true);
     armConfigs.CurrentLimits.SupplyCurrentThreshold = 20;
-    armConfigs.CurrentLimits.SupplyCurrentLimit = 10;
-    armConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;    
-    
-    slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
-    slot0Configs.kG = ArmPIDConstants.kG; //0.255
-    slot0Configs.kP = ArmPIDConstants.kP; //0.8
-    slot0Configs.kI = ArmPIDConstants.kI; //0
-    slot0Configs.kD = ArmPIDConstants.kD; //0.1
+        armConfigs.CurrentLimits.SupplyCurrentLimit = 10;
+        armConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    motionMagicConfigs.MotionMagicCruiseVelocity = 60;
-    motionMagicConfigs.MotionMagicAcceleration = 100;
-    motionMagicConfigs.MotionMagicJerk = 1600;
-  
     armMotor.getConfigurator().apply(armConfigs);
+    armMotor.setNeutralMode(NeutralModeValue.Brake);
+
+    var talonFXConfigs = new TalonFXConfiguration();
+
+        // set slot 0 gains
+        var slot0Configs = talonFXConfigs.Slot0;
+        slot0Configs.kS = 0.3; // Add 0.25 V output to overcome static friction
+        //9752 needs this
+        slot0Configs.kP = 4.0; // A position error of 2.5 rotations results in 12 V output
+
+        //9128 robot needs this:
+        slot0Configs.kI = 0; // no output for integrated error
+        slot0Configs.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
+
+        // set Motion Magic settings
+        var motionMagicConfigs = talonFXConfigs.MotionMagic;
+        motionMagicConfigs.MotionMagicCruiseVelocity = 80; // Target cruise velocity of 80 rps
+        motionMagicConfigs.MotionMagicAcceleration = 160; // Target acceleration of 160 rps/s (0.5 seconds)
+        motionMagicConfigs.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
+  
+      armMotor.getConfigurator().apply(talonFXConfigs);
+      
+      request = new MotionMagicVoltage(0);
 
   }
 
@@ -57,7 +65,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   public void setArmPosition(double positionSetPoint) {
     armPositionReached = false;
-    armMotor.setControl(request.withPosition(positionSetPoint));
+    armMotor.setControl(request.withPosition(positionSetPoint).withSlot(0));
     if (Math.round(armMotor.getPosition().getValueAsDouble())==positionSetPoint) {
       armPositionReached = true;
     }

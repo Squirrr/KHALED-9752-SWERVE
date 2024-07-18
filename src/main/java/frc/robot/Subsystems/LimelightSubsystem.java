@@ -4,16 +4,28 @@
 
 package frc.robot.Subsystems;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.LimelightHelpers;
+import frc.robot.Constants;
 import frc.robot.Constants.LimelightConstants;
+import frc.robot.LimelightHelpers;
+
 
 public class LimelightSubsystem extends SubsystemBase {
   /** Creates a new LimelightSubsystem. */
-  public LimelightConstants lConstants;
+  private Timer targetSeenTimer = new Timer();
+  private boolean targetSeen;
+  public double detectedTargetDistance = 0;
+
   public double limelightArmPos;
+
   public LimelightSubsystem() {}
 
   @Override
@@ -23,7 +35,25 @@ public class LimelightSubsystem extends SubsystemBase {
     // System.out.println(limelightArmPos);
     // limelightArmPos = setLimelightArmPos();
 
+    if (LimelightHelpers.getTV("limelight")) {
+      targetSeenTimer.restart();
+      // targetSeen = true;
 
+      final double camera_height = Units.inchesToMeters(Constants.LimelightConstants.limelightLensHeightInches);
+      final double target_height = Units.inchesToMeters(Constants.LimelightConstants.goalHeightInches);
+      final double camera_pitch = Units.degreesToRadians(Constants.LimelightConstants.limelightMountAngleDegrees);
+      double range =
+        PhotonUtils.calculateDistanceToTargetMeters(
+          camera_height,
+          target_height,
+          camera_pitch,
+          Units.degreesToRadians(LimelightHelpers.getTY("limelight")));
+      detectedTargetDistance = Units.metersToInches(range) - Constants.LimelightConstants.cameraToSpeakerDistance;
+    
+    } else if (targetSeenTimer.get() > 0.1) {
+      // targetSeen = false;
+      detectedTargetDistance = -1;
+    }
   }
 
   public double setLimelightArmPos() {
@@ -47,7 +77,7 @@ public class LimelightSubsystem extends SubsystemBase {
     // if it is too high, the robot will oscillate.
     // if it is too low, the robot will never reach its target
     // if the robot never turns in the correct direction, kP should be inverted.
-    double kP = .0068; //TODO: Tune for specific robot
+    double kP = .0067; //TODO: Tune for specific robot
 
     // tx ranges from (-hfov/2) to (hfov/2) in degrees. If your target is on the rightmost edge of 
     // your limelight 3 feed, tx should return roughly 31 degrees.

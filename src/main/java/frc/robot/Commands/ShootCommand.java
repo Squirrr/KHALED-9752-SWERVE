@@ -13,13 +13,17 @@ public class ShootCommand extends Command {
   TransferSubsystem transfer;
   ShooterSubsystem shooter;
   GateSubsystem gate;
-  double flywheelSpeed;
+  double leftFlywheelSpeed = 0;
+  double rightFlywheelSpeed = 0;
+
   /** Creates a new SimpleShoot. */
-  public ShootCommand(TransferSubsystem t, ShooterSubsystem s, GateSubsystem g, double fSpeed) {
+  public ShootCommand(TransferSubsystem t, ShooterSubsystem s, GateSubsystem g, 
+  double leftFlywheelSpeed, double rightFlywheelSpeed) {
     transfer = t;
     shooter = s;
     gate = g;
-    flywheelSpeed = fSpeed;
+    this.leftFlywheelSpeed = leftFlywheelSpeed;
+    this.rightFlywheelSpeed = rightFlywheelSpeed;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(transfer);
     addRequirements(shooter);
@@ -33,10 +37,10 @@ public class ShootCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setShooterRPM(flywheelSpeed*0.9, flywheelSpeed);
+    shooter.setShooterRPM(leftFlywheelSpeed, rightFlywheelSpeed);
     if (shooter.shooterSpeedReached) {
       gate.open();
-      transfer.setTransfer(1);
+      transfer.setTransfer(0.5);
     }
   }
 
