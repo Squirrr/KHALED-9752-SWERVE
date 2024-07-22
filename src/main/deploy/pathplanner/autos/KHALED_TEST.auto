@@ -18,6 +18,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "LIMELIGHT_AUTOPIVOT"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "straight"

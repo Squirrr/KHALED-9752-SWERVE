@@ -1,7 +1,5 @@
 package frc.robot;
 
-import java.util.function.DoubleSupplier;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -16,14 +14,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Commands.AutoPivot;
 import frc.robot.Commands.DumbIntake;
-import frc.robot.Commands.LimelightAutoAim;
+import frc.robot.Commands.AutoShoot;
 import frc.robot.Commands.ShootCommand;
 import frc.robot.Commands.SmartIntake;
 import frc.robot.Commands.SmartOuttake;
@@ -47,7 +46,7 @@ public class RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);    
     private final CommandPS5Controller base = new CommandPS5Controller(0);
-    private final CommandPS5Controller operator = new CommandPS5Controller(1);
+    // private final CommandPS5Controller operator = new CommandPS5Controller(1);
 
 
     /* Drive Controls */
@@ -89,19 +88,36 @@ public class RobotContainer {
             new TeleopSwerve(
                     s_Swerve,
                     limelight,
-                    null,
                     () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(translationAxis)),
                     () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(strafeAxis)),
                     () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(rotationAxis)),
                     () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(rotationAxisY)),
                     base.PS(), //robotCentricSup
-                    operator.R1(), //passHeading
-                    operator.circle(), //podiumHeading
-                    operator.square(), //ampPassHeading
+                    base.povLeft(), //passHeading
+                    base.circle(), //podiumHeading
+                    () -> false, //ampPassHeading //base.square()
                     base.triangle(), //limelightTarget
-                    base.triangle(), //povDown
-                    base.R3(), //defenseMode
-                    ()->false)); //limelight pivot (for auton only)
+                    base.povDown(), //povDown
+                    base.R3())); //defenseMode
+    
+
+        // s_Swerve.setDefaultCommand( //For two controllers
+        //     new TeleopSwerve(
+        //             s_Swerve,
+        //             limelight,
+        //             null,
+        //             () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(translationAxis)),
+        //             () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(strafeAxis)),
+        //             () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(rotationAxis)),
+        //             () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(rotationAxisY)),
+        //             base.PS(), //robotCentricSup
+        //             operator.R1(), //passHeading
+        //             operator.circle(), //podiumHeading
+        //             operator.square(), //ampPassHeading
+        //             base.triangle(), //limelightTarget
+        //             base.povDown(), //povDown
+        //             base.R3(), //defenseMode
+        //             ()->false)); //limelight pivot (for auton only)
     
         intake.setDefaultCommand(intake.DefaultCommand());
         transfer.setDefaultCommand(transfer.DefaultCommand());
@@ -125,7 +141,6 @@ public class RobotContainer {
         SmartDashboard.putNumber("Left Shooter Speed", shooter.currentShooterSpeed()[0]);
         SmartDashboard.putNumber("Right Shooter Speed", shooter.currentShooterSpeed()[1]);
 
-
         /* Named Commands */
         // NamedCommands.registerCommand("STOP_DRIVE", 
         // new TeleopSwerve(
@@ -143,7 +158,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("LIMELIGHT_AUTOAIM", new ParallelDeadlineGroup(
             new WaitCommand(0.5),
             new TeleopSwerve(
-                    s_Swerve, limelight, arm,
+                    s_Swerve, limelight,
                     () -> 0,() -> 0,() -> 0,() -> 0,
                     () -> false, //robotCentricSup
                     () -> false, //passHeading
@@ -151,8 +166,14 @@ public class RobotContainer {
                     () -> false, //ampPassHeading
                     () -> true, //limelightTarget
                     () -> false, //povDown
-                    () -> false, //defenseMode
-                    () -> true))); //limelight pivot (for auton only));
+                    () -> false))); //defenseMode
+
+        NamedCommands.registerCommand("LIMELIGHT_AUTOPIVOT", new AutoPivot(arm, limelight));
+
+        NamedCommands.registerCommand("LIMELIGHT_AUTOSHOOT", new ParallelRaceGroup(
+            new WaitCommand(3),
+            new AutoShoot(arm, shooter, gate, transfer, limelight)
+        ));
 
         NamedCommands.registerCommand("SUB_PIVOT", new ParallelDeadlineGroup(
             new WaitCommand(0.5), arm.SetArmToPos(ArmConstants.subPos)
@@ -230,14 +251,18 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-        base.circle().whileTrue(new DumbIntake(intake, transfer, gate));
         base.options().onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
         base.R1().whileTrue(new SmartIntake(intake, transfer, gate, arm));
         base.L1().whileTrue(new SmartOuttake(intake, transfer, gate, arm));
         base.R2().whileTrue(new ShootCommand(transfer, shooter, gate, 5000, 6000));
         base.cross().onTrue(arm.SetArmToPos(ArmConstants.ampPos));
         base.touchpad().onTrue(arm.SetArmToPos(ArmConstants.subPos));
-        base.triangle().onTrue(new LimelightAutoAim(limelight, arm));
+
+        base.triangle().onFalse(new AutoShoot(arm, shooter, gate, transfer, limelight));
+        // base.square().whileTrue(new TestConfigs(limelight, arm, shooter, gate, transfer)
+        // .withTimeout(2));
+        // base.triangle().whileTrue(new LimelightAutoAim(limelight, arm).withTimeout(0.5)/*transfer.Transfer(-0.1).withTimeout(0.5)*/
+        // .andThen(new LimelightShoot(limelight, transfer, shooter, gate)));
     }
 
     /**

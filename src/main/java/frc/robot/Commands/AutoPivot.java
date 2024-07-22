@@ -4,48 +4,54 @@
 
 package frc.robot.Commands;
 
-import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.LimelightHelpers;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.Subsystems.ArmSubsystem;
 import frc.robot.Subsystems.LimelightSubsystem;
 import frc.robot.utils.ShooterPreset;
 import frc.robot.utils.VisionLookUpTable;
 
-public class LimelightAutoAim extends Command {
+public class AutoPivot extends Command {
   LimelightSubsystem limelight;
   ArmSubsystem arm;
 
-  private double limelightPos = 0;
   private VisionLookUpTable m_VisionLookUpTable;
   private ShooterPreset m_ShooterPreset;
 
-  /** Creates a new LimelightAutoAim. */
-  public LimelightAutoAim(LimelightSubsystem l, ArmSubsystem a) {
+  private boolean finished = false;
+  private double m_armAngle, m_ArmPos;
+
+  /** Creates a new AutoPivot. */
+  public AutoPivot(ArmSubsystem a, LimelightSubsystem l) {
     limelight = l;
     arm = a;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(limelight);
-    addRequirements(arm);
+    addRequirements(limelight, arm);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    m_VisionLookUpTable = new VisionLookUpTable();
-  }
+  public void initialize() {m_VisionLookUpTable = new VisionLookUpTable();}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    finished = false;
     if (LimelightHelpers.getTV("limelight")) {
-      System.out.println(limelight.detectedTargetDistance);
+      // System.out.println(limelight.detectedTargetDistance);
       m_ShooterPreset = m_VisionLookUpTable.getShooterPreset(limelight.detectedTargetDistance);
-      double m_ArmPos = m_ShooterPreset.getArmAngle() * 56.1/90;
+      m_armAngle = m_ShooterPreset.getArmAngle();
+      m_ArmPos =  m_armAngle * 56.1/90;
       // System.out.println("Arm Angle" + m_ShooterPreset.getArmAngle());
       // System.out.println("Arm Position:" + m_ArmPos);
       arm.setArmPosition(m_ArmPos*(45.0/25.0));
+
+      while (Math.round(arm.currentArmPos()*(25.0/45.0)) != Math.round(m_ArmPos)) {
+          SmartDashboard.putNumber("Ll Angle", m_armAngle);
+          SmartDashboard.putNumber("Distance", limelight.detectedTargetDistance);
+        }
+      finished = true;
     }
   }
 
@@ -56,6 +62,6 @@ public class LimelightAutoAim extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return finished;
   }
 }

@@ -7,6 +7,7 @@ package frc.robot.utils;
 import java.util.Collections;
 import java.util.List;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 /** Add your docs here. */
@@ -83,7 +84,11 @@ public class VisionLookUpTable {
         // System.out.println("low arm angle:" + lowArmAngle);
         // System.out.println("high arm angle:" + highArmAngle);
 
-        double percentIn = (highDistance-key)/(highDistance-lowDistance);
+        double percentIn = (key-lowDistance)/(highDistance-lowDistance);
+
+        SmartDashboard.putNumber("low", low);
+        SmartDashboard.putNumber("high", high);
+        SmartDashboard.putNumber("percentIn", percentIn);
 
         return new ShooterPreset(
             lowArmAngle+(highArmAngle-lowArmAngle)*percentIn,

@@ -62,6 +62,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setShooterRPM(double leftFlywheelSetPoint, double rightFlywheelSetPoint) {
+    shooterSpeedReached = false;
     leftPIDController.setReference(leftFlywheelSetPoint, ControlType.kVelocity);
     rightPIDController.setReference(rightFlywheelSetPoint, ControlType.kVelocity);
     

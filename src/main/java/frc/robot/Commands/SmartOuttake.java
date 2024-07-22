@@ -22,9 +22,7 @@ public class SmartOuttake extends Command {
     arm = a;
     gate = g;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(intake);
-    addRequirements(transfer);
-    addRequirements(arm);
+    addRequirements(intake, transfer, arm, gate);
   }
 
   // Called when the command is initially scheduled.
@@ -43,7 +41,6 @@ public class SmartOuttake extends Command {
   @Override
   public void end(boolean interrupted) {}
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;

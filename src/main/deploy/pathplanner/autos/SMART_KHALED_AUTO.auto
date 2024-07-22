@@ -20,7 +20,7 @@
         {
           "type": "named",
           "data": {
-            "name": "SUB_PIVOT"
+            "name": "LIMELIGHT_AUTOPIVOT"
           }
         },
         {
@@ -38,12 +38,6 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 1.5
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
                         "pathName": "Center Note"
@@ -53,25 +47,6 @@
                       "type": "named",
                       "data": {
                         "name": "SMART_INTAKE"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "deadline",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.5
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "DUMB_INTAKE"
                       }
                     }
                   ]
@@ -92,6 +67,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "LIMELIGHT_AUTOPIVOT"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "SMART_TRANSFER"
                 }
               }
@@ -113,12 +94,6 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 2.0
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
                         "pathName": "Center to Right"
@@ -128,25 +103,6 @@
                       "type": "named",
                       "data": {
                         "name": "SMART_INTAKE"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "deadline",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.5
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "DUMB_INTAKE"
                       }
                     }
                   ]
@@ -167,6 +123,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "LIMELIGHT_AUTOPIVOT"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "SMART_TRANSFER"
                 }
               }
@@ -188,12 +150,6 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 2.0
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
                         "pathName": "Right to Left Note"
@@ -203,25 +159,6 @@
                       "type": "named",
                       "data": {
                         "name": "SMART_INTAKE"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "deadline",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.5
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "DUMB_INTAKE"
                       }
                     }
                   ]
@@ -242,7 +179,57 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "LIMELIGHT_AUTOPIVOT"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "SMART_TRANSFER"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SMART_INTAKE"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.1
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "STOP_INTAKE"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "STOP_TRANSFER"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "STOP_SHOOTER"
                 }
               }
             ]

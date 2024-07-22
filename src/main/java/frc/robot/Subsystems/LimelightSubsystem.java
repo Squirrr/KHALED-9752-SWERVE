@@ -5,12 +5,11 @@
 package frc.robot.Subsystems;
 
 
-import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -21,8 +20,8 @@ import frc.robot.LimelightHelpers;
 public class LimelightSubsystem extends SubsystemBase {
   /** Creates a new LimelightSubsystem. */
   private Timer targetSeenTimer = new Timer();
-  private boolean targetSeen;
   public double detectedTargetDistance = 0;
+  public boolean angleReached = false;
 
   public double limelightArmPos;
 
@@ -34,6 +33,7 @@ public class LimelightSubsystem extends SubsystemBase {
     //SmartDashboard.putNumber("Limelight Arm Pos", limelightArmPos);
     // System.out.println(limelightArmPos);
     // limelightArmPos = setLimelightArmPos();
+    SmartDashboard.putBoolean("angleReached?", angleReached);
 
     if (LimelightHelpers.getTV("limelight")) {
       targetSeenTimer.restart();
@@ -71,13 +71,13 @@ public class LimelightSubsystem extends SubsystemBase {
   }
 
   public double limelight_aim_proportional() {    
-
+    angleReached = false;
     // kP (constant of proportionality)
     // this is a hand-tuned number that determines the aggressiveness of our proportional control loop
     // if it is too high, the robot will oscillate.
     // if it is too low, the robot will never reach its target
     // if the robot never turns in the correct direction, kP should be inverted.
-    double kP = .0067; //TODO: Tune for specific robot
+    double kP = .0065; //TODO: Tune for specific robot
 
     // tx ranges from (-hfov/2) to (hfov/2) in degrees. If your target is on the rightmost edge of 
     // your limelight 3 feed, tx should return roughly 31 degrees.
@@ -89,6 +89,11 @@ public class LimelightSubsystem extends SubsystemBase {
     //invert since tx is positive when the target is to the right of the crosshair
     targetingAngularVelocity *= -1.0;
 
+    if (Math.abs(targetingAngularVelocity) < 0.1) {
+      angleReached = true;
+    } else {
+      angleReached = false;
+    }
     return targetingAngularVelocity;
   }
 
