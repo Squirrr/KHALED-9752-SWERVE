@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Commands.AutoPivot;
-import frc.robot.Commands.DumbIntake;
 import frc.robot.Commands.AutoShoot;
 import frc.robot.Commands.ShootCommand;
 import frc.robot.Commands.SmartIntake;
@@ -142,18 +141,6 @@ public class RobotContainer {
         SmartDashboard.putNumber("Right Shooter Speed", shooter.currentShooterSpeed()[1]);
 
         /* Named Commands */
-        // NamedCommands.registerCommand("STOP_DRIVE", 
-        // new TeleopSwerve(
-        //             s_Swerve, limelight, arm,
-        //             () -> 0,() -> 0,() -> 0,() -> 0,
-        //             () -> false, //robotCentricSup
-        //             () -> false, //passHeading
-        //             () -> false, //podiumHeading
-        //             () -> false, //ampPassHeading
-        //             () -> false, //limelightTarget
-        //             () -> false, //povDown
-        //             () -> false, //defenseMode
-        //             () -> false)); ////limelight pivot (for auton only)
 
         NamedCommands.registerCommand("LIMELIGHT_AUTOAIM", new ParallelDeadlineGroup(
             new WaitCommand(0.5),
@@ -175,26 +162,6 @@ public class RobotContainer {
             new AutoShoot(arm, shooter, gate, transfer, limelight)
         ));
 
-        NamedCommands.registerCommand("SUB_PIVOT", new ParallelDeadlineGroup(
-            new WaitCommand(0.5), arm.SetArmToPos(ArmConstants.subPos)
-        ));
-
-        NamedCommands.registerCommand("CENTER_PIVOT", new ParallelDeadlineGroup(
-            new WaitCommand(0.5), arm.SetArmToPos(21)
-        ));
-
-        NamedCommands.registerCommand("LEFT_PIVOT", new ParallelDeadlineGroup(
-            new WaitCommand(0.5), arm.SetArmToPos(25)
-        ));
-
-        NamedCommands.registerCommand("RIGHT_PIVOT", new ParallelDeadlineGroup(
-            new WaitCommand(0.5), arm.SetArmToPos(23.5)
-        ));
-
-        NamedCommands.registerCommand("DUMB_INTAKE",
-            new DumbIntake(intake, transfer, gate)
-        );
-
         NamedCommands.registerCommand("SMART_INTAKE", 
         new SmartIntake(intake, transfer, gate, arm));
 
@@ -202,8 +169,6 @@ public class RobotContainer {
             new WaitCommand(0.1), intake.DefaultCommand()
         ));
 
-        NamedCommands.registerCommand("SHOOTER_PREP", new ParallelDeadlineGroup(
-            new WaitCommand(0.5), transfer.Transfer(-0.1)));
 
         NamedCommands.registerCommand("SMART_TRANSFER", new SequentialCommandGroup(
         new ParallelDeadlineGroup(
@@ -219,7 +184,7 @@ public class RobotContainer {
         ));
 
         NamedCommands.registerCommand("START_SHOOTER", new ParallelDeadlineGroup(
-            new WaitCommand(0.1), shooter.SpinShooters(6000)
+            new WaitCommand(0.1), shooter.SpinShooters(2500, 3500)
         ));
 
         NamedCommands.registerCommand("SIMPLE_SHOOT", new ParallelDeadlineGroup(
@@ -230,12 +195,35 @@ public class RobotContainer {
             new WaitCommand(0.1), shooter.DefaultCommand()
         ));
 
-        NamedCommands.registerCommand("OPEN_GATE", 
-        gate.Open());
+        /*Useless Commands */
+        {
+        // NamedCommands.registerCommand("SUB_PIVOT", new ParallelDeadlineGroup(
+        //     new WaitCommand(0.5), arm.SetArmToPos(ArmConstants.subPos)
+        // ));
 
-        NamedCommands.registerCommand("CLOSE_GATE", 
-        gate.Close());
+        // NamedCommands.registerCommand("CENTER_PIVOT", new ParallelDeadlineGroup(
+        //     new WaitCommand(0.5), arm.SetArmToPos(21)
+        // ));
 
+        // NamedCommands.registerCommand("LEFT_PIVOT", new ParallelDeadlineGroup(
+        //     new WaitCommand(0.5), arm.SetArmToPos(25)
+        // ));
+
+        // NamedCommands.registerCommand("RIGHT_PIVOT", new ParallelDeadlineGroup(
+        //     new WaitCommand(0.5), arm.SetArmToPos(23.5)
+        // ));
+
+        // NamedCommands.registerCommand("DUMB_INTAKE",
+        //     new DumbIntake(intake, transfer, gate)
+        // );
+        // NamedCommands.registerCommand("SHOOTER_PREP", new ParallelDeadlineGroup(
+        //     new WaitCommand(0.5), transfer.Transfer(-0.1)));
+        // NamedCommands.registerCommand("OPEN_GATE", 
+        // gate.Open());
+
+        // NamedCommands.registerCommand("CLOSE_GATE", 
+        // gate.Close());
+        }
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 

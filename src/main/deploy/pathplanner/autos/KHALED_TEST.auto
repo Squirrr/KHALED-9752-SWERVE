@@ -12,18 +12,6 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "LIMELIGHT_AUTOAIM"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "LIMELIGHT_AUTOPIVOT"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "straight"

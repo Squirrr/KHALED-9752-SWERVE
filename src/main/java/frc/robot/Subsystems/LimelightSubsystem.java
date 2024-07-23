@@ -9,7 +9,6 @@ import org.photonvision.PhotonUtils;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -21,7 +20,6 @@ public class LimelightSubsystem extends SubsystemBase {
   /** Creates a new LimelightSubsystem. */
   private Timer targetSeenTimer = new Timer();
   public double detectedTargetDistance = 0;
-  public boolean angleReached = false;
 
   public double limelightArmPos;
 
@@ -33,7 +31,6 @@ public class LimelightSubsystem extends SubsystemBase {
     //SmartDashboard.putNumber("Limelight Arm Pos", limelightArmPos);
     // System.out.println(limelightArmPos);
     // limelightArmPos = setLimelightArmPos();
-    SmartDashboard.putBoolean("angleReached?", angleReached);
 
     if (LimelightHelpers.getTV("limelight")) {
       targetSeenTimer.restart();
@@ -71,7 +68,6 @@ public class LimelightSubsystem extends SubsystemBase {
   }
 
   public double limelight_aim_proportional() {    
-    angleReached = false;
     // kP (constant of proportionality)
     // this is a hand-tuned number that determines the aggressiveness of our proportional control loop
     // if it is too high, the robot will oscillate.
@@ -89,12 +85,11 @@ public class LimelightSubsystem extends SubsystemBase {
     //invert since tx is positive when the target is to the right of the crosshair
     targetingAngularVelocity *= -1.0;
 
-    if (Math.abs(targetingAngularVelocity) < 0.1) {
-      angleReached = true;
+    if (Math.round(targetingAngularVelocity*1000) == 0) {
+      return 0;
     } else {
-      angleReached = false;
+      return targetingAngularVelocity;
     }
-    return targetingAngularVelocity;
   }
 
   public Command DefaultCommand() {

@@ -64,8 +64,8 @@ public final class Constants {
 
     public static ShooterConfig getLookupTable(){
         ShooterConfig shooterConfig = new ShooterConfig();
-        shooterConfig.getShooterConfigs().add(new ShooterPreset(10, 2500, 2500, 1.9)); // Distance -> Bumper
-        shooterConfig.getShooterConfigs().add(new ShooterPreset(15, 2500, 3500, 20.50)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(10, 2500, 2500, 1.58)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(15.5, 2500, 3500, 20.50)); // Distance -> Bumper
         shooterConfig.getShooterConfigs().add(new ShooterPreset(18, 2500, 4000, 36.71)); // Distance -> Bumper
         shooterConfig.getShooterConfigs().add(new ShooterPreset(21, 2500, 4500, 54.84)); // Distance -> Bumper
         shooterConfig.getShooterConfigs().add(new ShooterPreset(22.8, 3000, 4500, 75.04)); // Distance -> Bumper

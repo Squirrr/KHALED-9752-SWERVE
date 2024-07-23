@@ -79,10 +79,10 @@ public class ShooterSubsystem extends SubsystemBase {
     return shooterVelocities;
   }
 
-  public Command SpinShooters(double flywheelSpeed) {
+  public Command SpinShooters(double leftFlywheelRPM, double rightFlywheelRPM) {
     return run(
       () -> {
-        setShooterRPM(flywheelSpeed*0.9, flywheelSpeed);
+        setShooterRPM(leftFlywheelRPM, rightFlywheelRPM);
       });
   }
 }

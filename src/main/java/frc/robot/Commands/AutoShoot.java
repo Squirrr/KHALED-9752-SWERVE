@@ -65,6 +65,8 @@ public class AutoShoot extends Command {
       while (Math.round(arm.currentArmPos()*(25.0/45.0)) != Math.round(m_ArmPos)) {
           SmartDashboard.putNumber("Ll Angle", m_armAngle);
           SmartDashboard.putNumber("Distance", limelight.detectedTargetDistance);
+          SmartDashboard.putNumber("Auto Arm Pos", Math.round(arm.currentArmPos()*(25.0/45.0)));
+          SmartDashboard.putNumber("Auto Target Pos", Math.round(m_ArmPos));
         }
       
       transferTimer.restart();
