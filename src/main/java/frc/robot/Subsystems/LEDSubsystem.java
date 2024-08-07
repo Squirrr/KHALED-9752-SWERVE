@@ -33,7 +33,7 @@ public class LEDSubsystem extends SubsystemBase {
     public void periodic() {
         currentArmPos = RobotContainer.arm.currentArmPos();
         
-        if (Math.round(RobotContainer.intake.intakeMotor.get())>0.05) {
+        if (Math.round(RobotContainer.intake.intakeSpeed())>0.05) {
             candle.clearAnimation(0);
             StrobeAnimation strobeAnimation = new StrobeAnimation(0,255,0,0,.5,999);
             candle.animate(strobeAnimation);
@@ -63,7 +63,7 @@ public class LEDSubsystem extends SubsystemBase {
     public Command defaultCommand(){
       return run(
               () -> {
-                //Skibidi sigma fanumtax no diddy fr
+                //I think this will allow the LEDs to run passively since all the code's in periodic.
               });
   }
 }

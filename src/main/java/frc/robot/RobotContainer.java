@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Commands.AutoPivot;
 import frc.robot.Commands.AutoPivotAndShoot;
+import frc.robot.Commands.AutoShoot;
 import frc.robot.Commands.ShootCommand;
 import frc.robot.Commands.SmartIntake;
 import frc.robot.Commands.SmartOuttake;
@@ -223,7 +225,23 @@ public class RobotContainer {
         base.R1().whileTrue(new ShootCommand(transfer, shooter, gate, 5000, 6000));
         base.cross().onTrue(arm.SetArmToPos(ArmConstants.ampPos));
         base.touchpad().onTrue(arm.SetArmToPos(ArmConstants.subPos));
-        base.triangle().onFalse(new AutoPivotAndShoot(arm, shooter, gate, transfer, limelight));
+
+
+        /*Explaining this b/c it looks rly confusing
+        * First, AutoPivot and AutoShoot are told to run in parallel
+        * But AutoShoot consists of 3 parts: outtake a bit, spin up shooters, intake quickly
+        * So we run the outtake a bit while we spin up shooters,
+        * Then intake quickly after shooters are spun up
+        */
+        base.triangle().onTrue(new AutoPivot(arm, limelight)
+        //Autoshoot
+            .alongWith( new ParallelDeadlineGroup(
+                new AutoShoot(shooter, limelight)),
+                transfer.Transfer(-0.25).withTimeout(0.25)
+                
+            .andThen(transfer.Transfer(1).withTimeout(0.25))
+
+        ));
      }
 
     /**
