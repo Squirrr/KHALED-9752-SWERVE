@@ -42,12 +42,12 @@ public class AutoPivot extends Command {
       // System.out.println(limelight.detectedTargetDistance);
       m_ShooterPreset = m_VisionLookUpTable.getShooterPreset(limelight.detectedTargetDistance);
       m_armAngle = m_ShooterPreset.getArmAngle();
-      m_ArmPos =  m_armAngle * 56.1/90;
+      m_ArmPos =  m_armAngle * 45.0/25.0;
       // System.out.println("Arm Angle" + m_ShooterPreset.getArmAngle());
       // System.out.println("Arm Position:" + m_ArmPos);
-      arm.setArmPosition(m_ArmPos*(45.0/25.0));
+      arm.setArmPosition(m_ArmPos);
 
-      while (Math.round(arm.currentArmPos()*(25.0/45.0)) != Math.round(m_ArmPos)) {
+      while (Math.round(arm.currentArmPos()) != Math.round(m_ArmPos)) {
           SmartDashboard.putNumber("Ll Angle", m_armAngle);
           SmartDashboard.putNumber("Distance", limelight.detectedTargetDistance);
         }

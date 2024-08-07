@@ -58,8 +58,7 @@ public class VisionLookUpTable {
                 index = mid;
                 break;
             }
-            // System.out.println("Low:" + low);
-            // System.out.println("High:" + high);
+            
         }
 
         if (low>high) {
@@ -81,14 +80,8 @@ public class VisionLookUpTable {
         double lowArmAngle = sortedArray.get(low).getArmAngle();
         double highArmAngle = sortedArray.get(high).getArmAngle();
 
-        // System.out.println("low arm angle:" + lowArmAngle);
-        // System.out.println("high arm angle:" + highArmAngle);
-
+        
         double percentIn = (key-lowDistance)/(highDistance-lowDistance);
-
-        SmartDashboard.putNumber("low", low);
-        SmartDashboard.putNumber("high", high);
-        SmartDashboard.putNumber("percentIn", percentIn);
 
         return new ShooterPreset(
             lowArmAngle+(highArmAngle-lowArmAngle)*percentIn,

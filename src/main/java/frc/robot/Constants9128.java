@@ -18,6 +18,114 @@ import frc.robot.utils.ShooterPreset;
 //FRC 9128
 
 public final class Constants9128 {
+    /* As per old code, given by Coach Abdurrehman vvv*/
+    public static final double stickDeadband = 0.1;
+    public static final int CANdleID = 1;
+    public static final int JoystickId = 0;
+    public static final int IncrementAnimButton = XboxController.Button.kRightBumper.value;
+    public static final int DecrementAnimButton = XboxController.Button.kLeftBumper.value;
+    public static final int BlockButton = XboxController.Button.kStart.value;
+    public static final int MaxBrightnessAngle = 90;
+    public static final int MidBrightnessAngle = 180;
+    public static final int ZeroBrightnessAngle = 270;
+    public static final int VbatButton = XboxController.Button.kA.value;
+    public static final int V5Button = XboxController.Button.kB.value;
+    public static final int CurrentButton = XboxController.Button.kX.value;
+    public static final int TemperatureButton = XboxController.Button.kY.value;
+    public static final boolean kIsTuningMode = true;
+    public static final double headingPresetKp = 0.003*5.0;
+    public static final double headingPresetKd = 0.0001*9.0;
+    public static final double driveHeadingKp = 0.003*5.0;
+    public static final double driveHeadingKd = 0.0001*9.0;
+    public static final double limelightHeadingCloseKp = -0.006;
+    public static final double limelightHeadingFarKp = -0.01;
+    public static final double limelightHeadingCloseBounds = 0.1;
+    public static final double limelightHeadingFarBounds = 0.05;
+    public static final double limelightAuto = 0.007;
+
+    public static final double translationalAutoP = 3.4;
+    public static final double rotationalAutoP = 6.1;
+
+    public static final class Universal {
+        public static final double voltageMin = 0;
+        public static final double voltageMax = 12;
+    }
+
+    // public static ShooterConfig getLookupTable(){
+    //     ShooterConfig shooterConfig = new ShooterConfig();
+    //     shooterConfig.getShooterConfigs().add(new ShooterPreset(6.5, 2500, 2500, 1.9)); // Distance -> Bumper
+    //     shooterConfig.getShooterConfigs().add(new ShooterPreset(10, 2500, 3500, 19.54)); // Distance -> Bumper
+    //     shooterConfig.getShooterConfigs().add(new ShooterPreset(11.5, 2500, 4000, 36.27)); // Distance -> Bumper
+    //     shooterConfig.getShooterConfigs().add(new ShooterPreset(12.6, 2500, 4500, 54.75)); // Distance -> Bumper
+    //     shooterConfig.getShooterConfigs().add(new ShooterPreset(13.5, 2500, 4500, 75)); // Distance -> Bumper
+    //     shooterConfig.getShooterConfigs().add(new ShooterPreset(14.5, 2500, 5500, 92)); // Distance -> Bumper
+    //     shooterConfig.getShooterConfigs().add(new ShooterPreset(15.2, 3500, 5500, 110)); // Distance -> Bumper
+    //     shooterConfig.getShooterConfigs().add(new ShooterPreset(15.75, 3500, 6000, 128.4)); // Distance -> Bumper
+    //     return shooterConfig;
+    // }
+
+    public static ShooterConfig getLookupTable(){
+        ShooterConfig shooterConfig = new ShooterConfig();
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(6, 2500, 2500, 0.85)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(9.25, 2500, 3500, 17.27)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(10.75, 2500, 3500, 33.6)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(11.5, 2500, 4500, 40)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(12, 2500, 4500, 50.4)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(13, 2500, 5000, 64)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(14, 2500, 5500, 85.1)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(14.4, 3500, 5500, 95.5)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(15, 3500, 6000, 112.8)); // Distance -> Bumper
+        return shooterConfig;
+    }
+
+    public static final class LimelightConstants {
+        public static final String photonVisionName = "9128limelight";
+        public static final double limelightMountAngleDegrees = 22.025;
+        public static final double limelightLensHeightInches = 19.5;
+        public static final double goalHeightInches = 57.5;
+        public static final double cameraToSpeakerDistance = 42.5;
+        public static final double turnPID = 0.015;
+        public static final double heightToAprilTag = 38.625; //Dist from Ll to AprilTag
+        public static final double aprilTagToSpeakerHeight = 20;
+    }
+    /* As per old code, given by Coach Abdurrehman ^^^*/
+
+    public static double degreesToArmAngle(double degrees, double gearRatio) {
+        return degrees*56.1/90; //Returns rotations
+    }
+
+    public static final class IntakeConstants {
+        public static final int kIntakeMotorPort = 15;
+    }
+
+    public static final class ArmConstants {
+        public static final int kArmMotorPort = 16;
+        public static final double ampPos = 70;
+        public static final double subPos = 10;
+
+        public class ArmPIDConstants {
+            //ArmPID came from Rayyan b/c his worked more smoothly than mine
+            public static final double kG = 0.255;
+            public static final double kP = 1.5;
+            public static final double kI = 0;
+            public static final double kD = 0.2;
+        }
+    }
+
+    public static final class ShooterConstants {
+        public static final int kTransferMotorPort = 20; 
+        public static final int kLeftShooterMotorPort = 21; //SparkFlex Controller 
+        public static final int kRightShooterMotorPort = 20; //SparkFlex Controller
+        public static final int kServoPort = 9; //Double-check
+        
+        public class ShooterPIDConstants {
+            public static final double kFF = 0.002;
+            public static final double kP = 0.002;
+            public static final double kI = 0.0;
+            public static final double kD = 0.001;
+        }
+    }
+
     public static final class Swerve {
         //9128
         public static final int pigeonID = 0;

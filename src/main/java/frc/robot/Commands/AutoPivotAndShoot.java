@@ -16,7 +16,7 @@ import frc.robot.Subsystems.TransferSubsystem;
 import frc.robot.utils.ShooterPreset;
 import frc.robot.utils.VisionLookUpTable;
 
-public class AutoShoot extends Command {
+public class AutoPivotAndShoot extends Command {
   LimelightSubsystem limelight;
   ArmSubsystem arm;
   ShooterSubsystem shooter;
@@ -31,7 +31,7 @@ public class AutoShoot extends Command {
   private double m_leftShooter, m_rightShooter, m_armAngle, m_ArmPos;
 
   /** Creates a new LimelightAutoAim. */
-  public AutoShoot(ArmSubsystem a, ShooterSubsystem s, 
+  public AutoPivotAndShoot(ArmSubsystem a, ShooterSubsystem s, 
   GateSubsystem g, TransferSubsystem t, LimelightSubsystem l) {
     limelight = l;
     arm = a;
@@ -52,15 +52,11 @@ public class AutoShoot extends Command {
   @Override
   public void execute() {
     if (LimelightHelpers.getTV("limelight")) {
-      // System.out.println(limelight.detectedTargetDistance);
       m_ShooterPreset = m_VisionLookUpTable.getShooterPreset(limelight.detectedTargetDistance);
       m_armAngle = m_ShooterPreset.getArmAngle();
-      m_ArmPos =  m_armAngle * 56.1/90;
-      m_leftShooter = m_ShooterPreset.getLeftShooter();
-      m_rightShooter = m_ShooterPreset.getRightShooter();
-      // System.out.println("Arm Angle" + m_ShooterPreset.getArmAngle());
-      // System.out.println("Arm Position:" + m_ArmPos);
-      arm.setArmPosition(m_ArmPos*(45.0/25.0));
+      m_ArmPos =  m_armAngle * 45.0/25.0;
+
+      arm.setArmPosition(m_ArmPos);
 
       while (Math.round(arm.currentArmPos()*(25.0/45.0)) != Math.round(m_ArmPos)) {
           SmartDashboard.putNumber("Ll Angle", m_armAngle);
@@ -70,9 +66,7 @@ public class AutoShoot extends Command {
         }
       
       transferTimer.restart();
-      SmartDashboard.putNumber("transferTimer", transferTimer.get());
       while (transferTimer.get()<0.25) {
-        SmartDashboard.putNumber("transferTimer", transferTimer.get());
         transfer.setTransfer(-0.1);
       }
 

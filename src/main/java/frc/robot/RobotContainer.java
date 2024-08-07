@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Commands.AutoPivot;
-import frc.robot.Commands.AutoShoot;
+import frc.robot.Commands.AutoPivotAndShoot;
 import frc.robot.Commands.ShootCommand;
 import frc.robot.Commands.SmartIntake;
 import frc.robot.Commands.SmartOuttake;
@@ -29,6 +29,7 @@ import frc.robot.Commands.TeleopSwerve;
 import frc.robot.Subsystems.ArmSubsystem;
 import frc.robot.Subsystems.GateSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
+import frc.robot.Subsystems.LEDSubsystem;
 import frc.robot.Subsystems.LimelightSubsystem;
 import frc.robot.Subsystems.ShooterSubsystem;
 import frc.robot.Subsystems.Swerve;
@@ -58,13 +59,14 @@ public class RobotContainer {
     // private final JoystickButton zeroGyro = new JoystickButton(driver, PS5Controller.Button.kOptions.value);
 
     /* Subsystems */
-    private final Swerve s_Swerve = new Swerve();
-    private final TransferSubsystem transfer = new TransferSubsystem();
-    private final GateSubsystem gate = new GateSubsystem();
-    private final IntakeSubsystem intake = new IntakeSubsystem();
-    private final ShooterSubsystem shooter = new ShooterSubsystem();
-    private final ArmSubsystem arm = new ArmSubsystem();
-    private final LimelightSubsystem limelight = new LimelightSubsystem();
+    private final static Swerve s_Swerve = new Swerve();
+    public final static TransferSubsystem transfer = new TransferSubsystem();
+    private final static GateSubsystem gate = new GateSubsystem();
+    public final static IntakeSubsystem intake = new IntakeSubsystem();
+    private final static ShooterSubsystem shooter = new ShooterSubsystem();
+    public final static ArmSubsystem arm = new ArmSubsystem();
+    private final static LimelightSubsystem limelight = new LimelightSubsystem();
+    private final static LEDSubsystem LEDs = new LEDSubsystem();
     
     private final SendableChooser<Command> autoChooser;
 
@@ -99,34 +101,10 @@ public class RobotContainer {
                     base.povDown(), //povDown
                     base.R3())); //defenseMode
     
-
-        // s_Swerve.setDefaultCommand( //For two controllers
-        //     new TeleopSwerve(
-        //             s_Swerve,
-        //             limelight,
-        //             null,
-        //             () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(translationAxis)),
-        //             () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(strafeAxis)),
-        //             () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(rotationAxis)),
-        //             () -> -SquaredInput.scale(Constants.stickDeadband, driver.getRawAxis(rotationAxisY)),
-        //             base.PS(), //robotCentricSup
-        //             operator.R1(), //passHeading
-        //             operator.circle(), //podiumHeading
-        //             operator.square(), //ampPassHeading
-        //             base.triangle(), //limelightTarget
-        //             base.povDown(), //povDown
-        //             base.R3(), //defenseMode
-        //             ()->false)); //limelight pivot (for auton only)
-    
         intake.setDefaultCommand(intake.DefaultCommand());
         transfer.setDefaultCommand(transfer.DefaultCommand());
         shooter.setDefaultCommand(shooter.DefaultCommand());
-        limelight.setDefaultCommand(limelight.DefaultCommand());
-        
-        // Build an auto chooser. This will use Commands.none() as the default option.
-
-        // Another option that allows you to specify the default auto by its name
-        // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
+        LEDs.setDefaultCommand(LEDs.defaultCommand());
         
         /* Smart Dashboard */
 
@@ -159,7 +137,7 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("LIMELIGHT_AUTOSHOOT", new ParallelRaceGroup(
             new WaitCommand(3),
-            new AutoShoot(arm, shooter, gate, transfer, limelight)
+            new AutoPivotAndShoot(arm, shooter, gate, transfer, limelight)
         ));
 
         NamedCommands.registerCommand("SMART_INTAKE", 
@@ -240,18 +218,13 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         base.options().onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-        base.R1().whileTrue(new SmartIntake(intake, transfer, gate, arm));
-        base.L1().whileTrue(new SmartOuttake(intake, transfer, gate, arm));
-        base.R2().whileTrue(new ShootCommand(transfer, shooter, gate, 5000, 6000));
+        base.R2().whileTrue(new SmartIntake(intake, transfer, gate, arm));
+        base.L2().whileTrue(new SmartOuttake(intake, transfer, gate, arm));
+        base.R1().whileTrue(new ShootCommand(transfer, shooter, gate, 5000, 6000));
         base.cross().onTrue(arm.SetArmToPos(ArmConstants.ampPos));
         base.touchpad().onTrue(arm.SetArmToPos(ArmConstants.subPos));
-
-        base.triangle().onFalse(new AutoShoot(arm, shooter, gate, transfer, limelight));
-        // base.square().whileTrue(new TestConfigs(limelight, arm, shooter, gate, transfer)
-        // .withTimeout(2));
-        // base.triangle().whileTrue(new LimelightAutoAim(limelight, arm).withTimeout(0.5)/*transfer.Transfer(-0.1).withTimeout(0.5)*/
-        // .andThen(new LimelightShoot(limelight, transfer, shooter, gate)));
-    }
+        base.triangle().onFalse(new AutoPivotAndShoot(arm, shooter, gate, transfer, limelight));
+     }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.

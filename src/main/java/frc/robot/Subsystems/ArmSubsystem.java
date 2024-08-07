@@ -17,7 +17,7 @@ import frc.robot.Constants.ArmConstants;
 
 public class ArmSubsystem extends SubsystemBase {
   /** Creates a new ArmSubsystem. */
-  final TalonFX armMotor = new TalonFX(ArmConstants.kArmMotorPort, "static");
+  public static final TalonFX armMotor = new TalonFX(ArmConstants.kArmMotorPort, "static");
 
   TalonFXConfiguration armConfigs = new TalonFXConfiguration();
   Slot0Configs slot0Configs = armConfigs.Slot0;
