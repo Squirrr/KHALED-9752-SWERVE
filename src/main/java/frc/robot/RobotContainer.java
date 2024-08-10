@@ -68,7 +68,7 @@ public class RobotContainer {
     private final static ShooterSubsystem shooter = new ShooterSubsystem();
     public final static ArmSubsystem arm = new ArmSubsystem();
     private final static LimelightSubsystem limelight = new LimelightSubsystem();
-    private final static LEDSubsystem LEDs = new LEDSubsystem();
+    private final static LEDSubsystem leds = new LEDSubsystem();
     
     private final SendableChooser<Command> autoChooser;
 
@@ -106,7 +106,7 @@ public class RobotContainer {
         intake.setDefaultCommand(intake.DefaultCommand());
         transfer.setDefaultCommand(transfer.DefaultCommand());
         shooter.setDefaultCommand(shooter.DefaultCommand());
-        LEDs.setDefaultCommand(LEDs.defaultCommand());
+        leds.setDefaultCommand(leds.defaultCommand());
         
         /* Smart Dashboard */
 
