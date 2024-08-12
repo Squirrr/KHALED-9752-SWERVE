@@ -44,55 +44,55 @@ public class LEDSubsystem extends SubsystemBase {
         intakeState = (RobotContainer.intake.intakeSpeed()>=0.05) ? 1 
         : (RobotContainer.intake.intakeSpeed()<=-0.05) ? -1 : 0; //1 = intaking, -1 = outtaking, 0 = N/A
 
-        if (Robot.disabled) {
+        if (Robot.disabled) { //When disabled, change color to blue if blue alliance, red if red alliance
             switch (getAllianceAsNum()) {
-                case 2: //RED
+                case 2: //RED ALLIANCE
                 candle.clearAnimation(0);
-                candle.setLEDs(255, 0, 0);
+                candle.setLEDs(255, 0, 0); //RED
                 break;
 
-                case 1: //BLUE
+                case 1: //BLUE ALLIANCE
                 candle.clearAnimation(0);
-                candle.setLEDs(0, 0, 255);
+                candle.setLEDs(0, 0, 255); //BLUE
                 break;
                 
-                default: //NONE
+                default: //NO ALLIANCE?
                 candle.clearAnimation(0);
-                candle.setLEDs(255, 255, 0);
+                candle.setLEDs(255, 0, 255); //PURPLE
                 break;
             }
         } else {
 
-            if (Math.round(currentArmPos) == ArmConstants.ampPos) { //AMP = ORANGE
+            if (Math.round(currentArmPos) == ArmConstants.ampPos) { //AMP
                 candle.clearAnimation(0);
-                candle.setLEDs(255, 50, 0);
+                candle.setLEDs(255, 50, 0); //ORANGE
 
-            } else if (Math.round(currentArmPos) == ArmConstants.subPos) { //CLOSESHOT = BLUE
+            } else if (Math.round(currentArmPos) == ArmConstants.subPos) { //CLOSESHOT
                 candle.clearAnimation(0);
-                candle.setLEDs(0, 0, 255);
+                candle.setLEDs(0, 0, 255); //BLUE
 
-            } else if(Math.round(currentArmPos/3) == 0){
+            } else if(Math.round(currentArmPos/3) == 0) { //0 POSITION
 
-                if (limelightTargeted && targetedDist < 100){
-                    if (intakeState == 1 && !(sensorDist < 250)) {
+                if (limelightTargeted && targetedDist < 100) {  //If within range of limelight
+                    if (intakeState == 1 && !(sensorDist < 250)) { //If intaking and note is NOT in shooter
                         candle.clearAnimation(0);
-                        candle.setLEDs(0, 255, 0);
+                        candle.setLEDs(0, 255, 0); //GREEN
 
-                    } else {
+                    } else { //If within range but not intaking or note is in shooter 
                         candle.clearAnimation(0);
-                        candle.setLEDs(255, 255, 255);
+                        candle.setLEDs(255, 255, 255); //WHITE
                     }
-                } else if (sensorDist < 250) {
+                } else if (sensorDist < 250) { //If not in range but note acquuired
                     candle.clearAnimation(0);
-                    candle.setLEDs(255, 0, 255);
+                    candle.setLEDs(255, 0, 255); //PURPLE
 
-                } else if (intakeState == 1) {
+                } else if (intakeState == 1) { //If not in range but intaking
                     candle.clearAnimation(0);
-                    candle.setLEDs(0, 255, 0);
+                    candle.setLEDs(0, 255, 0); //GREEN
 
-                } else if (intakeState == -1) {
+                } else if (intakeState == -1) { //If not in range but outtaking
                     candle.clearAnimation(0);
-                    candle.setLEDs(255, 0, 0);
+                    candle.setLEDs(255, 0, 0); //RED
                     
                 } else {
                     TwinkleAnimation twinkleAnimation = new TwinkleAnimation(50, 50, 50, 0, 0.5, 300,TwinklePercent.Percent42);
