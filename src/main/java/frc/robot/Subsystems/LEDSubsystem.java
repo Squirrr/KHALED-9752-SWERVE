@@ -6,7 +6,10 @@ package frc.robot.Subsystems;
 
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
+import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
 import com.ctre.phoenix.led.CANdleConfiguration;
+import com.ctre.phoenix.led.LarsonAnimation;
+import com.ctre.phoenix.led.SingleFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
@@ -95,8 +98,10 @@ public class LEDSubsystem extends SubsystemBase {
                     candle.setLEDs(255, 0, 0); //RED
                     
                 } else {
-                    TwinkleAnimation twinkleAnimation = new TwinkleAnimation(50, 50, 50, 0, 0.5, 300,TwinklePercent.Percent42);
-                    candle.animate(twinkleAnimation);
+                    SingleFadeAnimation singleFadeAnimation = new SingleFadeAnimation(100, 255, 100, 0, 0.5, 999);
+                    // LarsonAnimation larsonAnimation = new LarsonAnimation(255, 0, 255, 0, 0.5, 999, BounceMode.Front, 7);
+                    candle.clearAnimation(0);
+                    candle.animate(singleFadeAnimation);
                 }
             }
         }
