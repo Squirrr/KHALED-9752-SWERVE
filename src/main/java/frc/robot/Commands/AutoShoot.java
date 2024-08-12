@@ -29,8 +29,11 @@ public class AutoShoot extends Command {
   private double m_leftShooter, m_rightShooter;
 
   public AutoShoot(ShooterSubsystem s, LimelightSubsystem l) {
+
+    limelight = l;
+    shooter = s;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(limelight, shooter);
+    addRequirements(shooter);
   }
 
   // Called when the command is initially scheduled.

@@ -32,6 +32,9 @@ public class ShooterSubsystem extends SubsystemBase {
     rightShooterMotor.restoreFactoryDefaults();
     leftShooterMotor.restoreFactoryDefaults();
 
+    leftShooterMotor.setSmartCurrentLimit(80);
+    rightShooterMotor.setSmartCurrentLimit(80);
+
     rightShooterMotor.setInverted(true);
 
     rightPIDController.setFF(ShooterPIDConstants.kFF);

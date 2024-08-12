@@ -27,7 +27,7 @@ public class AutoPivot extends Command {
     limelight = l;
     arm = a;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(limelight, arm);
+    addRequirements(arm);
   }
 
   // Called when the command is initially scheduled.

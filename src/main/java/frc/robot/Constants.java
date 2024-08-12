@@ -35,14 +35,18 @@ public final class Constants {
     public static final int CurrentButton = XboxController.Button.kX.value;
     public static final int TemperatureButton = XboxController.Button.kY.value;
     public static final boolean kIsTuningMode = true;
-    
-    public static final double headingPresetKp = 0.003*3.0;
-    public static final double headingPresetKd = 0.0001*3.0;
-    public static final double driveHeadingKp = 0.003*3.0;
-    public static final double driveHeadingKd = 0.0001*3.0;
+    public static final double headingPresetKp = 0.003*5.0;
+    public static final double headingPresetKd = 0.0001*9.0;
+    public static final double driveHeadingKp = 0.003*5.0;
+    public static final double driveHeadingKd = 0.0001*9.0;
+    public static final double limelightHeadingCloseKp = -0.006;
+    public static final double limelightHeadingFarKp = -0.01;
+    public static final double limelightHeadingCloseBounds = 0.1;
+    public static final double limelightHeadingFarBounds = 0.05;
+    public static final double limelightAuto = 0.007;
 
-    public static final double translationalAutoP = 3.8;
-    public static final double rotationalAutoP = 6.25;
+    public static final double translationalAutoP = 3.4;
+    public static final double rotationalAutoP = 6.1;
 
     public static final class Universal {
         public static final double voltageMin = 0;
@@ -64,24 +68,25 @@ public final class Constants {
 
     public static ShooterConfig getLookupTable(){
         ShooterConfig shooterConfig = new ShooterConfig();
-        shooterConfig.getShooterConfigs().add(new ShooterPreset(10, 2500, 2500, 1.58)); // Distance -> Bumper
-        shooterConfig.getShooterConfigs().add(new ShooterPreset(15.5, 2500, 3500, 20.50)); // Distance -> Bumper
-        shooterConfig.getShooterConfigs().add(new ShooterPreset(18, 2500, 4000, 36.71)); // Distance -> Bumper
-        shooterConfig.getShooterConfigs().add(new ShooterPreset(21, 2500, 4500, 54.84)); // Distance -> Bumper
-        shooterConfig.getShooterConfigs().add(new ShooterPreset(22.8, 3000, 4500, 75.04)); // Distance -> Bumper
-        shooterConfig.getShooterConfigs().add(new ShooterPreset(23, 3000, 5500, 92.12)); // Distance -> Bumper
-        shooterConfig.getShooterConfigs().add(new ShooterPreset(24.5, 3500, 5500, 110.18)); // Distance -> Bumper
-        shooterConfig.getShooterConfigs().add(new ShooterPreset(25.9, 4000, 6000, 127.54)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(6, 2500, 2500, 0.85)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(9.25, 2500, 3500, 17.27)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(10.75, 2500, 3500, 33.6)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(11.5, 2500, 4500, 40)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(12, 2500, 4500, 50.4)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(13, 2500, 5000, 64)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(14, 2500, 5500, 85.1)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(14.4, 3500, 5500, 95.5)); // Distance -> Bumper
+        shooterConfig.getShooterConfigs().add(new ShooterPreset(15, 3500, 6000, 112.8)); // Distance -> Bumper
         return shooterConfig;
     }
 
     public static final class LimelightConstants {
-        public static final String photonVisionName = "9752limelight";
-        public static final double limelightMountAngleDegrees = 22.3;
-        public static final double limelightLensHeightInches = 19;
-        public static final double goalHeightInches = 57;
-        public static final double cameraToSpeakerDistance = 44;
-        public static final double turnPID = 0.005;
+        public static final String photonVisionName = "9128limelight";
+        public static final double limelightMountAngleDegrees = 22.025;
+        public static final double limelightLensHeightInches = 19.5;
+        public static final double goalHeightInches = 57.5;
+        public static final double cameraToSpeakerDistance = 42.5;
+        public static final double turnPID = 0.015;
         public static final double heightToAprilTag = 38.625; //Dist from Ll to AprilTag
         public static final double aprilTagToSpeakerHeight = 20;
     }
@@ -97,7 +102,7 @@ public final class Constants {
 
     public static final class ArmConstants {
         public static final int kArmMotorPort = 16;
-        public static final double ampPos = 70;
+        public static final double ampPos = 62;
         public static final double subPos = 10;
 
         public class ArmPIDConstants {
@@ -111,9 +116,9 @@ public final class Constants {
 
     public static final class ShooterConstants {
         public static final int kTransferMotorPort = 20; 
-        public static final int kLeftShooterMotorPort = 21; //SparkMAX Controller 
-        public static final int kRightShooterMotorPort = 20; //SparkMAX Controller
-        public static final int kServoPort = 9;
+        public static final int kLeftShooterMotorPort = 21; //SparkFlex Controller 
+        public static final int kRightShooterMotorPort = 20; //SparkFlex Controller
+        public static final int kServoPort = 9; //Double-check
         
         public class ShooterPIDConstants {
             public static final double kFF = 0.002;
@@ -122,7 +127,6 @@ public final class Constants {
             public static final double kD = 0.001;
         }
     }
-    /*Swerve constants taken form 9752worlds*/
 
     public static final class Swerve {
         //9128
@@ -267,16 +271,5 @@ public final class Constants {
         /* Constraint for the motion profilied robot angle controller */
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
                 kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
-    }
-
-    public static class LoggerSubscription {
-        public static final String battery = "BATTERY";
-        public static final String error = "ERROR";
-        public static final String motor = "MOTOR";
-        public static boolean batteryIsSubbed = false;
-        public static boolean errorIsSubbed = false;
-        public static boolean motorIsSubbed = false;
-        public static final double lowBatteryVoltage = 11.5;
-        public static final double lowMotorVoltage = 12;
     }
 }

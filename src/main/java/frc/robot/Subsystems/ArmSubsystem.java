@@ -40,7 +40,7 @@ public class ArmSubsystem extends SubsystemBase {
         var slot0Configs = talonFXConfigs.Slot0;
         slot0Configs.kS = 0.3; // Add 0.25 V output to overcome static friction
         //9752 needs this
-        slot0Configs.kP = 4.0; // A position error of 2.5 rotations results in 12 V output
+        slot0Configs.kP = 3.0; // A position error of 2.5 rotations results in 12 V output
 
         //9128 robot needs this:
         slot0Configs.kI = 0; // no output for integrated error
@@ -69,6 +69,10 @@ public class ArmSubsystem extends SubsystemBase {
     if (Math.round(armMotor.getPosition().getValueAsDouble())==positionSetPoint) {
       armPositionReached = true;
     }
+  }
+
+  public boolean armPosReached() {
+    return armPositionReached;
   }
 
   public Command SetArmToPos(double pos) {

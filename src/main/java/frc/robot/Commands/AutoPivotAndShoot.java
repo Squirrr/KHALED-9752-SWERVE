@@ -39,7 +39,7 @@ public class AutoPivotAndShoot extends Command {
     gate = g;
     transfer = t;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(limelight, arm, shooter, gate, transfer);
+    addRequirements(arm, shooter, gate, transfer);
   }
 
   // Called when the command is initially scheduled.

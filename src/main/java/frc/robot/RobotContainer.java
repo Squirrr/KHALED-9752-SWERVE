@@ -61,14 +61,14 @@ public class RobotContainer {
     // private final JoystickButton zeroGyro = new JoystickButton(driver, PS5Controller.Button.kOptions.value);
 
     /* Subsystems */
-    private final static Swerve s_Swerve = new Swerve();
+    public final static Swerve s_Swerve = new Swerve();
     public final static TransferSubsystem transfer = new TransferSubsystem();
-    private final static GateSubsystem gate = new GateSubsystem();
+    public final static GateSubsystem gate = new GateSubsystem();
     public final static IntakeSubsystem intake = new IntakeSubsystem();
-    private final static ShooterSubsystem shooter = new ShooterSubsystem();
+    public final static ShooterSubsystem shooter = new ShooterSubsystem();
     public final static ArmSubsystem arm = new ArmSubsystem();
-    private final static LimelightSubsystem limelight = new LimelightSubsystem();
-    private final static LEDSubsystem leds = new LEDSubsystem();
+    public final static LimelightSubsystem limelight = new LimelightSubsystem();
+    public final static LEDSubsystem leds = new LEDSubsystem();
     
     private final SendableChooser<Command> autoChooser;
 
@@ -235,13 +235,11 @@ public class RobotContainer {
         */
         base.triangle().onTrue(new AutoPivot(arm, limelight)
         //Autoshoot
-            .alongWith( new ParallelDeadlineGroup(
-                new AutoShoot(shooter, limelight)),
-                transfer.Transfer(-0.25).withTimeout(0.25)
-                
-            .andThen(transfer.Transfer(1).withTimeout(0.25))
-
-        ));
+            .alongWith(new ParallelDeadlineGroup(
+                new AutoShoot(shooter, limelight),
+                transfer.Transfer(-0.25).withTimeout(0.25)))
+            .andThen(transfer.Transfer(1).withTimeout(0.25))    
+                );
      }
 
     /**
